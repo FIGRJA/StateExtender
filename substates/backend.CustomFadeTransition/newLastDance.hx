@@ -1,5 +1,6 @@
 package substates.backend.CustomFadeTransition;
 var Ftext;
+if (this.get("previousLoadingScreen")==null) var previousLoadingScreen;
 function onSubstateCreate(ss) {
     if (previousLoadingScreen!=null&&Type.getClassName(Type.getClass(FlxG.state))!="states.LoadingState"){
 

@@ -246,19 +246,26 @@ function switchCustomState(_state,?args) {
     MusicBeatState.switchState(new MusicBeatState());
     
 }
+function seatchLastSubState(state) {
+    return state.subState==null?state:seatchLastSubState(state.subState);
+}
 var customSubState;
 var subStates = [];
-function openCustomSubstate(name,?pause) {// please no use // in progress
+var deffollowLerp = 1;
+function openCustomSubstate(name,?pause,?_state) {// please no use // in progress
     trace("open CSS-"+name);
+    _state ??= seatchLastSubState(FlxG.state);
     customSubState = new MusicBeatSubstate();
     if(pause){
+        deffollowLerp = FlxG.camera.followLerp;
         FlxG.camera.followLerp = 0;
-        FlxG.state.persistentUpdate = true;
-        FlxG.state.persistentDraw = true;
+        _state.persistentUpdate = false;
+        //_state.persistentDraw = false;
     }
-    subStates.push({name: name,pause: pause,subState: customSubState});
+    subStates.push({name: name,pause: pause,subState: customSubState,state: _state});
     callHX("onCustomSubstateCreate",[customSubState,name]);
-    FlxG.state.openSubState(customSubState);
+    _state.closeSubState();
+    _state.openSubState(customSubState);
     callHX("onCustomSubstateCreatePost",[customSubState,name]);
 }
 function closeCustomSubstate(name) {
@@ -271,13 +278,14 @@ function closeCustomSubstate(name) {
         }
     }
     if(SS.pause){
-        FlxG.camera.followLerp = 0;
-        FlxG.state.persistentUpdate = false;
-        FlxG.state.persistentDraw = false;
+        FlxG.camera.followLerp = deffollowLerp;
+        SS.state.persistentUpdate = true;
+        //SS.state.persistentDraw = true;
     }
     subStates.remove(SS);
     callHX("onCustomSubstateDestroy",[SS.subState,SS.name]);
-    SS.subState.destroy();
+    SS.subState?.destroy();
+    SS.state.closeSubState();
 }
 objThis = {};
 for (f in this.interp.variables.keys()){

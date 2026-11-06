@@ -1,10 +1,11 @@
 ## chartEditor
 
-* v-slice dificulties (not only erect!)(without backend.Dificulties)
+* v-slice dificulties variable (not only erect!)(without backend.Dificulties)
 * disable previewCharacters
 * add ctrl+q for exit (with mesage)
 * add eventsPreviewSettings
 * welcome dialog
+* complite coments
 
 ## characterEditor
 

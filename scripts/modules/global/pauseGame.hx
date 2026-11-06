@@ -61,6 +61,7 @@ function onUpdate(e) {
 	//	CustomSubstate.openCustomSubstate('END', true);}
 }
 var curAction:Int = 0;
+var pausedSongs = [];
 function onCustomSubstateCreate(customSubstate,name) {
 	isPause = name == "GlobalPause";
 	if (!isPause)
@@ -68,10 +69,18 @@ function onCustomSubstateCreate(customSubstate,name) {
 	FlxG.cameras.add(pauseBG, false);
 	timer = 0.2;
 	stunAction = false;
+	pausedSongs = [];
+	for (s in FlxG.sound.list.members.concat([FlxG.sound.music])){
+        //if (!s.playing)continue;
+        s.pause();
+		pausedSongs.push(s);
+    }
 
 	backTimer = new FlxText(0, 0, 350, "3", 250, true);
 	backTimer.font = Paths.font("fnt_main.ttf");
-	backTimer.cameras = [game.camOther];
+	//backTimer.cameras = [customSubstate.camera];
+	backTimer.cameras = [FlxG.cameras.list[FlxG.cameras.list.length-1]];
+	backTimer.camera = FlxG.cameras.list[FlxG.cameras.list.length-1];
 	// susiCombo.scale.y = 4;
 	backTimer.screenCenter(0x11); // XY
 	backTimer.antialiasing = false;
@@ -171,6 +180,8 @@ function onCustomSubstateCreatePost(customSubstate,name) {
 function pressAccept() {
 	//playSnd("coin");
 	switch (freeAction[Std.int(curAction)].text) {
+		case "continue":
+			continuem();
 		case "restart":
 			FlxTransitionableState.skipNextTransIn = false;
 			FlxTransitionableState.skipNextTransOut = false;
@@ -179,8 +190,8 @@ function pressAccept() {
 			FlxTransitionableState.skipNextTransIn = false;
 			FlxTransitionableState.skipNextTransOut = false;
 			//MusicBeatState.startTransition();
-
-        	MusicBeatState.switchState(new ResultPreviewMenu());
+			FlxG.resetGame();
+        	//MusicBeatState.switchState(new ResultPreviewMenu());
 		// PlayState.nextReloadAll = true;
 		case "toMenu":
 			PlayState.SONG.song = "songChart";
@@ -219,15 +230,8 @@ function updateText(?Simply=false) {
 		}
 	
 }
-function onCustomSubstateUpdate(customSubstate,name, e) {
-	if (!isPause)
-		return;
-	if (timer > 0) {
-		timer -= e;
-		return;
-	}
-	if ((Control.BACK||back?.justPressed)) {
-
+function continuem() {
+	
 		//playSnd("splat");
 		timer = 4;
 		//FlxTween.tween(pauseBG, {x: -700, alpha: 0}, 60 / Conductor.bpm, {ease: FlxEase.circOut});
@@ -250,9 +254,15 @@ function onCustomSubstateUpdate(customSubstate,name, e) {
 		//}} ,num -> Conductor.songPosition = num );
 		backTimer.visible = true;
 		FlxTimer.loop(0.5, (tim) -> {
+			//trace("hi");
 			backTimer.text = 3 - tim;
-			if (tim == 3)
+			if (tim == 3){
 				StateHelper.closeCustomSubstate('GlobalPause');
+				for (s in pausedSongs){
+					s.play();
+				}
+			}
+
 				//CustomSubstate.closeCustomSubstate();
 				//game.setSongTime(Conductor.songPosition);
 		}, 4);
@@ -260,6 +270,18 @@ function onCustomSubstateUpdate(customSubstate,name, e) {
 		inst.fadeOut(1.5, 0, () -> {
 			inst.pause();
 		});
+		//trace("hi");
+}
+function onCustomSubstateUpdate(customSubstate,name, e) {
+	if (!isPause)
+		return;
+	if (timer > 0) {
+		timer -= e;
+		return;
+	}
+	if ((Control.BACK||back?.justPressed)) {
+		continuem();
+
 	}
 	if (Control.ACCEPT) {
 		pressAccept();
@@ -284,7 +306,9 @@ function onCustomSubstateUpdate(customSubstate,name, e) {
 		//playSnd("bump");
 	}
     if (Control.CHAR_SELECT ){
-		MusicBeatState.resetState();
+		//MusicBeatState.resetState();
+		inst.pause();
+				StateHelper.closeCustomSubstate('GlobalPause');
 		//playSnd("splat");
     }
 	// debugPrint("                                                           "+curAction);

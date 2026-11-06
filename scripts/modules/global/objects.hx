@@ -10,7 +10,7 @@ import haxe.io.Path;
 
 function onSelfCreate() {
     createObjects();
-    setGlobalVar("newObject");
+    setGlobalVar("newObject",newObject);
     setVar("newObject",newObject);
 }
 
@@ -48,10 +48,10 @@ function StartHXObj(module,?dir) {
     //trace("try "+module);
     
 	if (NativeFileSystem.exists(scriptToLoad)) {
-		if (Iris.instances.exists(scriptToLoad)) {
-            Iris.instances.get(scriptToLoad)?.destroy();
-            Iris.instances.remove(scriptToLoad);
-        }
+		//if (Iris.instances.exists(scriptToLoad)) {
+        //    Iris.instances.get(scriptToLoad)?.destroy();
+        //    Iris.instances.remove(scriptToLoad);
+        //}
         try {
             DeltaRuneCode = new HScript(null, scriptToLoad,null,true);
             DeltaRuneCode.interp.parentInstance = Type.createEmptyInstance(Type.resolveClass("flixel.FlxBasic"));

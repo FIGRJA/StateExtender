@@ -142,6 +142,7 @@ function onCreatePost() {
     //    m.set("SuperControls",SuperControls);
     //}
 	setGlobalVar("SuperControls");
+	FlxG.timeScale = 1;
 }
 	setGlobalVar("SuperControls");
 //function onSubstateCreate() {

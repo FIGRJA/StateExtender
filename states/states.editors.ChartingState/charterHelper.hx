@@ -100,6 +100,7 @@ var HXmodules = [];
 var Helper:Dynamic ;
 var lastTime:Int = 0;
 var section:Int = -1;
+var curZ = -1;
 var beat:Int = -1;
 var ChartLoaded:Bool = false;
 var previewCharaters:FlxSpriteGroup ;
@@ -864,7 +865,7 @@ Helper = ()->{
             }
             checkUndo();
             //notesPrew.Update();
-            if (sectionChange){
+            if (sectionChange||curZ != curZoom){
                 //if (section%2==0){
                 PlWave.text.color = healthColorsArray[0];
                 PlWave.text.borderColor = isLight(healthColorsArray[0])?0xFF000000:0xFFFFFFFF;
@@ -938,7 +939,6 @@ function onUpdates(e) {
 
 var wavData = [[[0], [0]], [[0], [0]]];
 
-var curZ = -1;
 function upgradeCW(cur,vec) {
     try{
     var reload = Math.abs(vec)>1||curZ != curZoom;
