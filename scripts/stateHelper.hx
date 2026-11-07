@@ -8,8 +8,11 @@ import crowplexus.iris.Iris;
 import haxe.io.Path;
 import openfl.Lib;
 
+import states.MainMenuState;
+var isPSlice = Type.getClassFields(MainMenuState).contains('pSliceVersion');
+
 import backend.Mods;
-import backend.CacheSystem;
+if(isPSlice)import backend.CacheSystem;
 import backend.MusicBeatState;
 import backend.MusicBeatSubstate;
 import states.editors.MasterEditorMenu;
@@ -17,7 +20,7 @@ import states.editors.MasterEditorMenu;
 //import backend.ui.PsychUIButton;
 //import backend.ui.PsychUICheckBox;
 //import backend.ui.PsychUINumericStepper;
-import mikolka.funkin.custom.NativeFileSystem as NativeFileSystem;
+if(isPSlice)import mikolka.funkin.custom.NativeFileSystem as NativeFileSystem;
 var fakeLib = false;
 try{
     if (NativeFileSystem==null){}
