@@ -9,7 +9,6 @@ import haxe.io.Path;
 import openfl.Lib;
 
 import backend.Mods;
-import backend.CacheSystem;
 import backend.MusicBeatState;
 import backend.MusicBeatSubstate;
 import states.editors.MasterEditorMenu;
@@ -17,12 +16,12 @@ import states.editors.MasterEditorMenu;
 //import backend.ui.PsychUIButton;
 //import backend.ui.PsychUICheckBox;
 //import backend.ui.PsychUINumericStepper;
-import mikolka.funkin.custom.NativeFileSystem as NativeFileSystem;
+
+//import mikolka.funkin.custom.NativeFileSystem as NativeFileSystem;
+//import backend.CacheSystem;
 var fakeLib = false;
-try{
-    if (NativeFileSystem==null){}
-    if (CacheSystem==null){}
-}catch(e:Dynamic){
+var _NativeFileSystem = Type.resolveClass("mikolka.funkin.custom.NativeFileSystem");
+if (_NativeFileSystem==null){
     import sys.FileSystem as FileSystem;
     //import cutscenes.DialogueBoxPsych;
     
@@ -32,7 +31,7 @@ try{
 			return path;
 		return null;
 	}
-    var fakeNativeFileSystem = {
+    _NativeFileSystem = {
         "exists":(p)->{return getPathLike(p)!=null;},
         "readDirectory":(p)->{
             if (getPathLike(p)!=null)
@@ -42,8 +41,13 @@ try{
             return FileSystem.isDirectory((directory));
         }
     };
-    this.set("NativeFileSystem",fakeNativeFileSystem);
-    var fakeCacheSystem = {
+    fakeLib = true;
+}
+this.set("NativeFileSystem",_NativeFileSystem);
+
+var _CacheSystem = Type.resolveClass("backend.CacheSystem");
+if (_CacheSystem==null){
+    _CacheSystem = {
         "loadSound":(p,b,t)->{
             p = p.split(".ogg")[0];
             var a = p.split("/");
@@ -58,9 +62,10 @@ try{
             return Paths.returnSound(mp.join("/"));
         }
     };
-    this.set("CacheSystem",fakeCacheSystem);
     fakeLib = true;
 }
+this.set("CacheSystem",_CacheSystem);
+
 
 var HXmodules = [];
 
