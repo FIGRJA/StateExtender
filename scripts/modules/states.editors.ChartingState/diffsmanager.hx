@@ -46,10 +46,12 @@ import haxe.Log;
     bgAlpha: 0
 };
 var diffCHbtn;
-var unSafeCharts = [""=>null];
+//var unSafeCharts = [""=>null];
+if (this.get("unSafeCharts")==null) var unSafeCharts = [""=>null];
 var GEvents = ["this"=>null];
 function onCreateTrue() {
 setVar("unSafeCharts",unSafeCharts);
+setGlobalVar("unSafeCharts",unSafeCharts);
 setVar("GEvents",GEvents);
     //for (i in ["fileDialog","loadChart","reloadNotesDropdowns","prepareReload","upperBox","saveChart"])
     //    this.set(i,Reflect.field(FlxG.state,i));
