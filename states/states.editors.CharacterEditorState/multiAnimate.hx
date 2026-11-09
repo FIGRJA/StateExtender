@@ -156,7 +156,7 @@ trace("found");
     //    #if sys
         var trimmed:String = pathOrStr.trim();
         trimmed = trimmed.substr(trimmed.length - 5).toLowerCase();
-        if(trimmed == '.json') myJson = File.getContent(myJson); //is a path
+        if(trimmed == '.json') myJson = NativeFileSystem.getContent(myJson); //is a path
     //    #end
 //
     //    //animJson = cast haxe.Json.parse(_removeBOM(myJson));
@@ -173,14 +173,14 @@ trace("found");
     #if sys
     if(trimmed == '.json') //Path is json
     {
-        myData = File.getContent(pathOrStr);
+        myData = NativeFileSystem.getContent(pathOrStr);
         //isXml = false;
     }
 
 trace("get");
     //else if (trimmed.substr(1) == '.xml') //Path is xml
     //{
-    //    myData = File.getContent(pathOrStr);
+    //    myData = NativeFileSystem.getContent(pathOrStr);
     //    isXml = true;
     //}
     #end

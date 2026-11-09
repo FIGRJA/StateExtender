@@ -62,7 +62,7 @@ function onCreatePost() {
                     var fEx = false;
                     function nextMeta() {
                         //var metadata = cast Json.parse(fileDialog.data);
-                        var metadata = TJSON.parse(fEx?File.getContent(fileDialog.path.split("-chart.json")[0]+"-metadata.json"):fileDialog.data);
+                        var metadata = TJSON.parse(fEx?NativeFileSystem.getContent(fileDialog.path.split("-chart.json")[0]+"-metadata.json"):fileDialog.data);
                         if(metadata == null || metadata.version == null || metadata.playData == null || metadata.songName == null ||
                             metadata.playData.difficulties == null || metadata.timeChanges == null || metadata.timeChanges.length < 1)
                         {

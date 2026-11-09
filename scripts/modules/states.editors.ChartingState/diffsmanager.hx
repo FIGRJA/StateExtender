@@ -240,7 +240,7 @@ function loadS(diff,?unsafe=false) {
             var poop:String = Highscore.formatSong(songLowercase, Difficulty.list.indexOf(diff));
             //var reloadedChart:SwagSong = Song.getChart(poop);
             PathS = Paths.getPath(Path.join(["data",songLowercase,poop+".json"]));
-            reloadedChart =  Song.parseJSON(File.getContent(PathS));
+            reloadedChart =  Song.parseJSON(NativeFileSystem.getContent(PathS));
             trace(poop);
         }
         //trace(reloadedChart);
@@ -370,7 +370,7 @@ function prepareReloadW(?force)
 function loadEv() {
 try{
     var filePath:String = Paths.getPath("data"+"/"+Paths.formatToSongPath(songNameInputText.text)+"/"+"events.json");
-    var eventsFile:SwagSong = Song.parseJSON(File.getContent(filePath), filePath.substr(filePath.lastIndexOf("/")));
+    var eventsFile:SwagSong = Song.parseJSON(NativeFileSystem.getContent(filePath), filePath.substr(filePath.lastIndexOf("/")));
     if(eventsFile == null || Reflect.hasField(eventsFile, 'scrollSpeed') || eventsFile.events == null)
     {
         addOutText('Error: File loaded is not a Psych Engine chart/events file.', true);

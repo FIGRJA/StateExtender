@@ -1,4 +1,5 @@
 package scripts;
+import psychlua.LuaUtils;
 import Type;
 import Main;
 import Reflect;
@@ -23,22 +24,124 @@ var fakeLib = false;
 var _NativeFileSystem = Type.resolveClass("mikolka.funkin.custom.NativeFileSystem");
 if (_NativeFileSystem==null){
     import sys.FileSystem as FileSystem;
-    //import cutscenes.DialogueBoxPsych;
+    // #if OPENFL_LOOKUP
+    import lime.utils.Assets;
+    import openfl.utils.Assets as OpenFlAssets;
+    // #end
     
-    function getPathLike(path:String)
+    //import cutscenes.DialogueBoxPsych;
+     function addCwd(directory:String):String
 	{
-		if (FileSystem.exists(path))
-			return path;
-		return null;
+		//#if (desktop || web)
+        if (["windows_x86","windows","linux","mac","browser"].contains(LuaUtils.getBuildTarget()))
+		    return directory;
+        else{
+		//#else
+            var cwd = Sys.getCwd();//idk how port this
+            var test_cwd = Path.removeTrailingSlashes(cwd);
+            if (directory.indexOf(test_cwd)==0)
+                return directory;
+            return Path.addTrailingSlash(cwd) + directory;
+        }
+		//#end
 	}
+    function getPathLike(path:String):Null<String> {
+		var path = addCwd(path);// fix ios
+		
+		//var dir = Path.directory(path);
+		//for(exclude in excludePaths){
+		//	if(dir.startsWith(exclude)) 
+		//		return null;
+		//	
+		//}
+		if(FileSystem.exists(path)) return path;
+//
+		var baseParts:Array<String> = path.split('\\').join('/').split('/');
+		var keyParts = [];
+		if (baseParts.length == 0) return null;
+//
+		//while(!FileSystem.exists(baseParts.join("/")) && baseParts.length != 0)
+		//	keyParts.insert(0, baseParts.pop());
+////
+		//return findFile(baseParts.join("/"),keyParts);
+	}
+    //function findFile(base_path:String,keys:Array<String>):Null<String> {
+	//	var nextDir:String = base_path;
+	//	for (part in keys) {
+	//		if (part == '') continue;
+//
+	//		var foundNode = findNode(nextDir, part);
+//
+	//		//if (foundNode == null) {
+	//		//	excludePaths.push(nextDir+"/"+part);
+	//		//	return null;
+	//		//}
+	//		nextDir = nextDir+"/"+foundNode;
+	//	}
+//
+	//	return nextDir;
+	//}
+    //function findNode(dir:String, key:String):Null<String> {
+	//	try {
+	//		var allFiles:Array<String> = FileSystem.readDirectory(dir);
+	//		var fileMap:Map<String, String> = new Map();
+//
+	//		for (file in allFiles) {
+	//			fileMap.set(file.toLowerCase(), file);
+	//		}
+//
+	//		return fileMap.get(key.toLowerCase());
+	//	} catch (e:Dynamic) {
+	//		return null;
+	//	}
+	//}
+
+    //function getPathLike(path:String)
+	//{
+	//	if (FileSystem.exists(path))
+	//		return path;
+	//	return null;
+	//}
     _NativeFileSystem = {
-        "exists":(p)->{return getPathLike(p)!=null;},
+        //"findNode":findNode,
+        //"findFile":findFile,
+        //"addCwd":addCwd,
+        //"getPathLike":getPathLike,
+        "exists":(p)->{
+            return getPathLike(p)!=null;
+        },
         "readDirectory":(p)->{
             if (getPathLike(p)!=null)
                 return FileSystem.readDirectory(p);
             return [];
-        },"isDirectory":(p)->{
+        },
+        "isDirectory":(p)->{
             return FileSystem.isDirectory((directory));
+        },
+        "getContent":(path)->{
+            var isModded = path.indexOf("mods")==0;
+            // #if OPENFL_LOOKUP
+            if (!isModded)
+            {
+                var openfl_content = (openFlAssets.contains(path)) ? Assets.getText(path) : null;
+                if (openfl_content != null)
+                    return openfl_content;
+            }
+            // #end
+
+            // #if NATIVE_LOOKUP
+            // #if OPENFL_LOOKUP
+            if (!isModded)
+                return null;
+            // #end
+            var sys_path = getPathLike(path);
+            var sys_res = sys_path != null ? File.getContent(sys_path) : null;
+            if (sys_res != null)
+                return sys_res;
+            trace("Fake_NativeFileSystem: Text file doesn't exist!! ", path);
+            // #end
+            return null;
+            
         }
     };
     fakeLib = true;

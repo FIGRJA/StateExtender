@@ -17,7 +17,7 @@ import openfl.geom.Rectangle;
 //import flixel.util.FlxAxes;
 
 function parseJson(file) {
-    s = File.getContent(file);
+    s = NativeFileSystem.getContent(file);
     return TJSON.parse(s);
 }
 

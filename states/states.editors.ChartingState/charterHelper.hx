@@ -19,57 +19,57 @@ import openfl.geom.Rectangle;
 //import openfl.display.BitmapData;
 
 import backend.Mods;
-import backend.CacheSystem;
+//import backend.CacheSystem;
 import backend.ui.PsychUIBox;
 import backend.ui.PsychUIButton;
 import backend.ui.PsychUICheckBox;
 import backend.ui.PsychUINumericStepper;
-import mikolka.funkin.custom.NativeFileSystem as NativeFileSystem;
+//import mikolka.funkin.custom.NativeFileSystem as NativeFileSystem;
 //import mikolka.stages.cutscenes.dialogueBox.DialogueBoxPsych; // import haxe.Json;
 import states.editors.ChartingState;
 import tjson.TJSON;
 import psychlua.LuaUtils;
 var fakeLib = false;
-try{
-    if (NativeFileSystem==null){}
-    if (CacheSystem==null){}
-}catch(e:Dynamic){
-    import sys.FileSystem as FileSystem;
-    //import cutscenes.DialogueBoxPsych;
-    
-    function getPathLike(path:String)
-	{
-		if (FileSystem.exists(path))
-			return path;
-		return null;
-	}
-    var fakeNativeFileSystem = {
-        "exists":(p)->{return getPathLike(p)!=null;},
-        "readDirectory":(p)->{
-            if (getPathLike(p)!=null)
-                return FileSystem.readDirectory(p);
-            return [];
-        }
-    };
-    this.set("NativeFileSystem",fakeNativeFileSystem);
-    var fakeCacheSystem = {
-        "loadSound":(p,b,t)->{
-            p = p.split(".ogg")[0];
-            var a = p.split("/");
-            var k = [];
-            k.push(a[0]);
-            k.push(a[1]);
-            var mp = [];
-            for (i in 2...a.length){
-                mp.push(a[i]);
-            }
-            //addOutText(mp);
-            return Paths.returnSound(mp.join("/"));
-        }
-    };
-    this.set("CacheSystem",fakeCacheSystem);
-    fakeLib = true;
-}
+//try{
+//    if (NativeFileSystem==null){}
+//    if (CacheSystem==null){}
+//}catch(e:Dynamic){
+//    import sys.FileSystem as FileSystem;
+//    //import cutscenes.DialogueBoxPsych;
+//    
+//    function getPathLike(path:String)
+//	{
+//		if (FileSystem.exists(path))
+//			return path;
+//		return null;
+//	}
+//    var fakeNativeFileSystem = {
+//        "exists":(p)->{return getPathLike(p)!=null;},
+//        "readDirectory":(p)->{
+//            if (getPathLike(p)!=null)
+//                return FileSystem.readDirectory(p);
+//            return [];
+//        }
+//    };
+//    this.set("NativeFileSystem",fakeNativeFileSystem);
+//    var fakeCacheSystem = {
+//        "loadSound":(p,b,t)->{
+//            p = p.split(".ogg")[0];
+//            var a = p.split("/");
+//            var k = [];
+//            k.push(a[0]);
+//            k.push(a[1]);
+//            var mp = [];
+//            for (i in 2...a.length){
+//                mp.push(a[i]);
+//            }
+//            //addOutText(mp);
+//            return Paths.returnSound(mp.join("/"));
+//        }
+//    };
+//    this.set("CacheSystem",fakeCacheSystem);
+//    fakeLib = true;
+//}
 /**
  * [Description] 
  * HScript importer
@@ -82,7 +82,7 @@ function setVF(Var,Fun) {
 	
 }
 function parseJson(file) {
-    s = File.getContent(file);
+    s = NativeFileSystem.getContent(file);
     return TJSON.parse(s);
 }
 
