@@ -12,7 +12,8 @@ import openfl.Lib;
 import backend.Mods;
 import backend.MusicBeatState;
 import backend.MusicBeatSubstate;
-import states.editors.MasterEditorMenu;
+//import states.editors.MasterEditorMenu;
+import states.LoadingState;
 //import backend.ui.PsychUIBox;
 //import backend.ui.PsychUIButton;
 //import backend.ui.PsychUICheckBox;
@@ -204,6 +205,8 @@ function startInjectSignals() {
     //FlxG.signals.preStateSwitch.add(function() {
     //trace("Попытка переключения. Текущее: " + FlxG.state + " Запрошено: " + FlxG.game._requestedState);
     //});
+    signalOnCreate(FlxG.state);// for first 
+    signalOnSwitchPost();
 }
 var customState = "test";
 var customArgs = [];
@@ -354,6 +357,13 @@ function switchCustomState(_state,?args) {
     MusicBeatState.switchState(new MusicBeatState());
     
 }
+function switchCustomStateWithLoading(_state,?args) {
+    customState = _state;
+    customArgs = args ;
+    //MusicBeatState.switchState(new MusicBeatState());
+	LoadingState.loadAndSwitchState(new MusicBeatState());
+    
+}
 function seatchLastSubState(state) {
     return state.subState==null?state:seatchLastSubState(state.subState);
 }
@@ -447,7 +457,7 @@ function signalOnSSDestroy(SS) {
         while (i< HXmodules.length){
             var m = HXmodules[i];
             try{
-            if (m?.interp.parentInstance==SS){
+            if (m?.interp?.parentInstance==SS){
                 m?.destroy();
                 HXmodules.remove(m);
             }
