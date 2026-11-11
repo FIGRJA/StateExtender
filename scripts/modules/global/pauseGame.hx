@@ -1,5 +1,5 @@
 //if (PlayState.SONG.stage!="D3Main") return;
-return;// global custom sub state not work corect!
+//return;// global custom sub state not work corect!
 import backend.Controls;
 import backend.MusicBeatState;
 import psychlua.CustomSubstate;
@@ -187,9 +187,10 @@ function pressAccept() {
 			FlxTransitionableState.skipNextTransOut = false;
 			MusicBeatState.startTransition();
 		case "reset":
-			FlxTransitionableState.skipNextTransIn = false;
-			FlxTransitionableState.skipNextTransOut = false;
+			//FlxTransitionableState.skipNextTransIn = false;
+			//FlxTransitionableState.skipNextTransOut = false;
 			//MusicBeatState.startTransition();
+				StateHelper.closeCustomSubstate('GlobalPause');
 			FlxG.resetGame();
         	//MusicBeatState.switchState(new ResultPreviewMenu());
 		// PlayState.nextReloadAll = true;

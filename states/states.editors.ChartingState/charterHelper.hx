@@ -1002,7 +1002,7 @@ function updateCustomWaveform(sameWave,_curSec,?_lenSec,?sound,?color) {
             sameWave.visible = false;
             insert(5,sameWave);
         }
-		if(_curSec < 0 || _curSec >= cachedSectionTimes.length || !waveformEnabled)
+		if(_curSec < 0 || _curSec >= cachedSectionTimes.length /*|| !waveformEnabled*/)
 		{
 			sameWave.visible = false;
 			return;
@@ -1042,7 +1042,7 @@ function updateCustomWaveform(sameWave,_curSec,?_lenSec,?sound,?color) {
 			var rmin:Float = FlxMath.bound(((index < wavData[1][0].length && index >= 0) ? wavData[1][0][index] : 0) * (gSize / 1.12), -hSize, hSize) / 2;
 			var rmax:Float = FlxMath.bound(((index < wavData[1][1].length && index >= 0) ? wavData[1][1][index] : 0) * (gSize / 1.12), -hSize, hSize) / 2;
 
-            if (!ClientPrefs.data.lowQuality)
+            if (!(ClientPrefs.data.lowQuality||SimpleWave.checked))
 			    sameWave.pixels.fillRect(new Rectangle((hSize - (lmin + rmin)) , index, ((lmin + rmin) + (lmax + rmax)), 1), someColor);
 			sameWave.pixels.fillRect(new Rectangle((hSize - (lmin + rmin)) +size, index, ((lmin + rmin) + (lmax + rmax)) -size*2, 1), color);
 		}
