@@ -283,7 +283,7 @@ function StartHXModule(module,?dir) {
             Iris.instances.remove(scriptToLoad);
         }
         try {
-            DeltaRuneCode = new HScript(null, scriptToLoad,null,true);
+            var DeltaRuneCode = new HScript(null, scriptToLoad,null,true);
             DeltaRuneCode.interp.parentInstance = dir.indexOf("/substates/")==-1?FlxG.state:FlxG.state.subState;
             DeltaRuneCode.set("super",DeltaRuneCode.interp.parentInstance);
             DeltaRuneCode.interp.showPosOnLog = false;
@@ -435,6 +435,7 @@ function signalOnSwitch() {
         var _Main = findChildAtClass(Lib.current,"Main");
         _Main.init();
         trace("try");
+            //switchCustomStateWithLoading("customstate.cameraEditor");
         switchTimer = 5;
     }
     switchTimer -=1;
@@ -471,7 +472,7 @@ function signalOnSSDestroy(SS) {
 function signalOnUpdate() {
     var e = FlxG.elapsed;
     var paused = false;
-    SS = subStates.copy();
+    var SS = subStates.copy();
     SS.reverse();
     for (s in SS){
         callHX("onCustomSubstateUpdate",[s.subState,s.name,e]);
@@ -483,7 +484,7 @@ function signalOnUpdate() {
 function signalOnUpdatePost() {
     var e = FlxG.elapsed;
     var paused = false;
-    SS = subStates.copy();
+    var SS = subStates.copy();
     SS.reverse();
     for (s in subStates){
         callHX("onCustomSubstateUpdatePost",[s.subState,s.name]);

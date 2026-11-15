@@ -16,3 +16,8 @@ function onAcceptE(option) {
             StateHelper.switchCustomStateWithLoading("customstate.cameraEditor");
     }
 }
+function onUpdate(e) {
+    if (controls.ACCEPT){
+       onAcceptE(options[curSelected]); 
+    }
+}

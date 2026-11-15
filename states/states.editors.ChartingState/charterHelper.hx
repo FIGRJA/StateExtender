@@ -562,380 +562,391 @@ function removeHitEVER(t) {
 }
 var p = false;
 //var funnyOnec = true;
-Helper = ()->{
-    try{
-        //e += _;
-        //trace("hi");
-        setVar("chartExtened",Helper);
 
-        if (Type.getClassName(Type.getClass(FlxG.state))=="states.editors.ChartingState"){
-            var state =  FlxG.state;
-            if (!ChartLoaded){
-                menuY = 0;
-                scanlofy();
-                lofyM = new FlxSound();
-                FlxG.sound.list.add(lofyM);
-                //FlxG.sound.list.memberAdded.add(removeHitEVER);
-                outTextGroup = new FlxTypedSpriteGroup();
-                state.insert(5,outTextGroup);
-                outTextGroup.cameras = [state.camUI];
-                state.outputTxt.visible = false;
+function onCreatePost() {
 
-                tab_group = state.mainBox.getTab('Charting').menu;
-                previewCharaters = new FlxTypedSpriteGroup();
-                TBoxs = [];
-                setPrewChars();
-                lofyCheckBox = new PsychUICheckBox(20 + 290, menuY+5, 'lo-fy', 30, () ->{lofyControl = lofyCheckBox.checked;});
-                lofyCheckBox.checked = lofyControl;
-                lofyrandom = new PsychUINumericStepper(10 + 353, menuY+23, 5, 25, 0, 100, 0,55);
-                lofyvolume = new PsychUINumericStepper(10 + 353, menuY+7, 0.05, 1, 0, 1, 2,55,true);
-		        tab_group.add(lofyCheckBox);
-		        tab_group.add(lofyvolume);
-                
-                lofyvolume.onValueChange=()->{
-                    if (lofyM.fadeTween!=null)
-                        if (lofyM.fadeTween.active){
-                            var ti = (1-lofyM.fadeTween.percent)*lofyM.fadeTween.duration;
-                            lofyM.fadeTween.cancel();
-                            lofyM.fadeIn(ti,lofyM.volume,lofyvolume.value);
-                            return;
-                        }
-                    lofyM.volume=lofyvolume.value;
-                };
-		        tab_group.add(lofyrandom);
-		        tab_group.add(new FlxText(lofyrandom.x-7, lofyrandom.y + 15, 130, '% random next'));
-		        tab_group.add(new PsychUIButton(20 + 290,menuY+25,"reroll",chuselofy,40,20));
-		        //tab_group.add(new PsychUIButton(20 + 430,menuY+20,"reload Modules",()->{
-                //    for (m in HXmodules){
-                //        Iris.instances.remove(m.scriptName);
-                //        m.destroy();
-                //        HXmodules.remove(m);
-                //    }
-                //    createModules();
-                //},100,20));
+    menuY = 0;
+    scanlofy();
+    lofyM = new FlxSound();
+    FlxG.sound.list.add(lofyM);
+    //FlxG.sound.list.memberAdded.add(removeHitEVER);
+    outTextGroup = new FlxTypedSpriteGroup();
+    insert(5,outTextGroup);
+    outTextGroup.cameras = [camUI];
+    outputTxt.visible = false;
 
-                menuY += 70;
-
-                hitsoundSign = new PsychUINumericStepper(20 + 290, menuY, 0.1, 0.0, 0, 1, 1);
-                tab_group.add(hitsoundSign);
-		        tab_group.add(new FlxText(hitsoundSign.x, hitsoundSign.y - 15, 130, 'HitSign (for BIG fps):'));
-
-                menuY += 30;
-                
-		        tab_group.add(new FlxText(350, menuY, 130, 'Waves'));
-                PlWave = new PsychUICheckBox(20 + 290, menuY+10, 'player', 37, () ->{if (wavesTyped.exists("PLAYER")) wavesTyped.get("PLAYER").visible = PlWave.checked;});
-                OppWave = new PsychUICheckBox(20 + 347, menuY+10, 'opponent',67, () ->{if (wavesTyped.exists("OPPONENT")) wavesTyped.get("OPPONENT").visible = OppWave.checked;});
-                PlWave.checked = (state.vocals ?? {"length":0}).length>100;
-                OppWave.checked = (state.opponentVocals ?? {"length":0}).length>100;
-                OppWave.box.x += 51;
-                OppWave.text.x -= 19;
-                PlWave.text.borderStyle = border;
-                PlWave.text.borderSize = 1;
-                OppWave.text.borderStyle = border;
-                OppWave.text.borderSize = 1;
-		        tab_group.add(PlWave);
-		        tab_group.add(OppWave);
-                SimpleWave = new PsychUICheckBox(20 + 290, menuY+30, 'simple waves mode',100);
-                //SimpleWave.checked = true;//ClientPrefs.data.lowQuality;//need rework//done
-		        tab_group.add(SimpleWave);
-
-                menuY += 50;
-
-                stretchVortex = new PsychUICheckBox(20 + 290, menuY, 'long vortex',40);
-		        tab_group.add(stretchVortex);
-
-                menuY += 30;
-
-                hitsoundPlayerStepper = new PsychUINumericStepper(10, 145, 0.2, 0, 0, 1, 1);
-                hitsoundOpponentStepper = new PsychUINumericStepper(10+100, 145, 0.2, 0, 0, 1, 1);
-                hitsoundMetronomeStepper = new PsychUINumericStepper(10+200, 145, 0.2, 0, 0, 1, 1);
-                hitsoundPlayerStepper.behindText.color = 0xF7E3FF;
-                hitsoundOpponentStepper.behindText.color = 0xF7E3FF;
-                hitsoundMetronomeStepper.behindText.color = 0xF7E3FF;
-                if (true){
-                    tab_group.remove(state.hitsoundPlayerStepper);
-                    tab_group.remove(state.hitsoundOpponentStepper);
-                    tab_group.remove(state.metronomeStepper);
-                    tab_group.add(hitsoundPlayerStepper);
-                    tab_group.add(hitsoundOpponentStepper);
-                    tab_group.add(hitsoundMetronomeStepper);
-                    hitsoundPlayerStepper.value = 0.6;
-                    hitsoundOpponentStepper.value = 0.6;
-                }
-
-                //state.mainBox.updateTabs();
-                //var wid:Int = state.mainBox.bg.width / state.mainBox.tabs.length;
-                var wid:Array = [];
-                var pres=0;
-                for (tab in state.mainBox.tabs)
-                {
-                    tab.text.fieldWidth = tab.text.textField.textWidth;
-                    tab.text.textField.wordWrap = false;
-
-                    //tab.text.updateHitbox();
-                    //tab.text.fieldWidth = tab.text.textField.textWidth+5;
-                    wid.push(tab.text.fieldWidth);
-                    pres += tab.text.fieldWidth;
-                    //tab.resize(wid, 20);
-                    //tab.cameras = cameras;
-                }
-                pres = state.mainBox.bg.width/pres;
-                //pres = 1;
-                var lX=0;
-                for (w in wid) lX += Std.int(w * pres);
-                lX = (state.mainBox.bg.width-lX)/2;
-                //var tY = lX;
-                for (num in 0...state.mainBox.tabs.length)
-                {
-                    var tab = state.mainBox.tabs[num];
-                    tab.x = state.mainBox.x + lX;
-                    //tab.y = state.mainBox.y - tY;
-                    lX += Std.int(wid[num]*pres);
-                    tab.resize(wid[num]*pres, 20);
-                    //tab.cameras = cameras;
-                }
-                createModules();
-                callHX("onCreateTrue");
-
-                var cursor = new FlxSprite();
-                cursor.loadGraphic(Paths.image("spr_rhythmgame_editor_mouse_0"));
-                //cursor.antialiasing = true;
-                FlxG.mouse.load(cursor.pixels,2);
-
-                for (i in state.icons){
-                    //var scale = i.scale;
-                    FlxTween.tween(i,{"x":i.x,"y":i.y,"scale.x":i.scale.x,"scale.y":i.scale.y,"alpha":i.alpha},1);
-                    i.scale.set(i.scale.x*50,i.scale.y*50);
-                    i.alpha = 1;
-                    i.x += i.width*2.5;
-                    i.y += i.height*2.5;
-                }
-
-                ChartLoaded = true;
-                FlxG.sound.play(Paths.sound('snd_ominous'), 0.6);
-                if (fakeLib)
-                    addOutText("fake Lib's added",true,true);trace("work!!");
-                //trace(objThis.interp.locals);
-               // addOutText(test.test(),true,true);
-                //addOutText(test.testVar,true,true);
+    tab_group = mainBox.getTab('Charting').menu;
+    previewCharaters = new FlxTypedSpriteGroup();
+    TBoxs = [];
+    setPrewChars();
+    lofyCheckBox = new PsychUICheckBox(20 + 290, menuY+5, 'lo-fy', 30, () ->{lofyControl = lofyCheckBox.checked;});
+    lofyCheckBox.checked = lofyControl;
+    lofyrandom = new PsychUINumericStepper(10 + 353, menuY+23, 5, 25, 0, 100, 0,55);
+    lofyvolume = new PsychUINumericStepper(10 + 353, menuY+7, 0.05, 1, 0, 1, 2,55,true);
+    tab_group.add(lofyCheckBox);
+    tab_group.add(lofyvolume);
+    
+    lofyvolume.onValueChange=()->{
+        if (lofyM.fadeTween!=null)
+            if (lofyM.fadeTween.active){
+                var ti = (1-lofyM.fadeTween.percent)*lofyM.fadeTween.duration;
+                lofyM.fadeTween.cancel();
+                lofyM.fadeIn(ti,lofyM.volume,lofyvolume.value);
+                return;
             }
-            //funnyOnec = !funnyOnec;
-            //if (funnyOnec){
-            //    return;
-            //}
-            var sectionChange = false;
-            var sectionVec = 0;
-            var subEditor = Type.getClassName(Type.getClass(state.subState))=="states.editors.content.EditorPlayState";
-            if (subEditor?(state.subState.curSec!=section):(state.curSec!=section)){
-                if (section!=-1&&state.curSec==0)//временно
-                {
-                    updateCharacters();
-                   // var wid:Array = [];
-                   // var pres=0;
-                   // for (tab in state.mainBox.tabs)
-                   // {
-                   //     tab.text.fieldWidth = tab.text.textField.textWidth+10;
-                   //     tab.text.textField.wordWrap = false;
+        lofyM.volume=lofyvolume.value;
+    };
+    tab_group.add(lofyrandom);
+    tab_group.add(new FlxText(lofyrandom.x-7, lofyrandom.y + 15, 130, '% random next'));
+    tab_group.add(new PsychUIButton(20 + 290,menuY+25,"reroll",chuselofy,40,20));
+    //tab_group.add(new PsychUIButton(20 + 430,menuY+20,"reload Modules",()->{
+    //    for (m in HXmodules){
+    //        Iris.instances.remove(m.scriptName);
+    //        m.destroy();
+    //        HXmodules.remove(m);
+    //    }
+    //    createModules();
+    //},100,20));
 
-                   //     //tab.text.updateHitbox();
-                   //     //tab.text.fieldWidth = tab.text.textField.textWidth+5;
-                   //     wid.push(tab.text.fieldWidth);
-                   //     pres += tab.text.fieldWidth;
-                   //     //tab.resize(wid, 20);
-                   //     //tab.cameras = cameras;
-                   // }
-                   // pres = state.mainBox.bg.width/pres;
-                   // //pres = 1;
-                   // var lX=0;
-                   // for (w in wid) lX += Std.int(w * pres);
-                   // lX = (state.mainBox.bg.width-lX)/2;
-                   // for (num in 0...state.mainBox.tabs.length)
-                   // {
-                   //     var tab = state.mainBox.tabs[num];
-                   //     tab.x = state.mainBox.x + lX;
-                   //     lX += Std.int(wid[num]*pres);
-                   //     tab.resize(wid[num]*pres, 20);
-                   //     //tab.cameras = cameras;
-                   // }
-                }
-                sectionVec = subEditor?(state.subState.curSec):(state.curSec) - section;
-                section = subEditor?(state.subState.curSec):(state.curSec);
-                sectionChange = true;
-                if (hitsoundMetronomeStepper.value>0)
-                    FlxG.sound.play(Paths.sound('chartingSounds/metronome1'), hitsoundMetronomeStepper.value);
-                //for (i in 0...ChartingState.GRID_PLAYERS){
-                //    state.icons[i].antialiasing=false;
-                //}
-                if (ChartingState.GRID_PLAYERS==1){
-                    //var kek = ChartingState.GRID_SIZE;
-                    //ChartingState.GRID_SIZE = 20;
-                    updateWaveform("INST");
-                    //ChartingState.GRID_SIZE = kek;
-                }
-                
-            }
-            if (subEditor?(state.subState.curBeat!=beat):(state.curBeat!=beat)){
-                beat = subEditor?(state.subState.curBeat):(state.curBeat);
-                notDance();
-                if (!sectionChange&&hitsoundMetronomeStepper.value>0)
-                    FlxG.sound.play(Paths.sound('chartingSounds/metronome2'), hitsoundMetronomeStepper.value);
+    menuY += 70;
 
-            }
-            if ((FlxG.sound.music.playing||subEditor)&&(lastTime != Conductor.songPosition)){
-                if (subEditor){
-                    //state.mainBox.visible=true;
-                    //addOutText("hi",false,true);
-                    try{
-                        checkNotes(state.notes.concat(state.events));
-                        for (m in previewCharaters){
-                            if(m!=null)
-                                m.update((Conductor.songPosition-lastTime)/1000);
-                        }
-                    }catch(e:Dynamic){addOutText(e,true);}
-                }
-                else
-                    checkNotes(state.curRenderedNotes.members.concat(state.behindRenderedNotes.members));
+    hitsoundSign = new PsychUINumericStepper(20 + 290, menuY, 0.1, 0.0, 0, 1, 1);
+    tab_group.add(hitsoundSign);
+    tab_group.add(new FlxText(hitsoundSign.x, hitsoundSign.y - 15, 130, 'HitSign (for BIG fps):'));
 
-                
-            }
-            //lateDance();
-            lastTime = Conductor.songPosition;
-            //trace(Conductor.songPosition);
-            if (FlxG.sound.music.playing||subEditor)
-                stoplofy();
-            else
-                playlofy();
-            if (state.outputAlpha == 4){
-                addOutText(state.outputTxt.text,state.outputTxt.color==0xFFFF0000,true);
-                state.outputAlpha = 0;//lol
-               // trace("triger!!!");
-            }
-            var onTabs = ((state.subState!=null) || FlxG.mouse.overlaps(state.mainBox,state.camUI) || FlxG.mouse.overlaps(state.infoBox,state.camUI) || FlxG.mouse.overlaps(state.upperBox,state.camUI));
-            if (!onTabs){
-                for (i in TBoxs){
-                    onTabs = onTabs || FlxG.mouse.overlaps(i,state.camUI);
+    menuY += 30;
+    
+    tab_group.add(new FlxText(350, menuY, 130, 'Waves'));
+    PlWave = new PsychUICheckBox(20 + 290, menuY+10, 'player', 37, () ->{if (wavesTyped.exists("PLAYER")) wavesTyped.get("PLAYER").visible = PlWave.checked;});
+    OppWave = new PsychUICheckBox(20 + 347, menuY+10, 'opponent',67, () ->{if (wavesTyped.exists("OPPONENT")) wavesTyped.get("OPPONENT").visible = OppWave.checked;});
+    PlWave.checked = (vocals ?? {"length":0}).length>100;
+    OppWave.checked = (opponentVocals ?? {"length":0}).length>100;
+    OppWave.box.x += 51;
+    OppWave.text.x -= 19;
+    PlWave.text.borderStyle = border;
+    PlWave.text.borderSize = 1;
+    OppWave.text.borderStyle = border;
+    OppWave.text.borderSize = 1;
+    tab_group.add(PlWave);
+    tab_group.add(OppWave);
+    SimpleWave = new PsychUICheckBox(20 + 290, menuY+30, 'simple waves mode',100);
+    //SimpleWave.checked = true;//ClientPrefs.data.lowQuality;//need rework//done
+    tab_group.add(SimpleWave);
+
+    menuY += 50;
+
+    stretchVortex = new PsychUICheckBox(20 + 290, menuY, 'long vortex',40);
+    tab_group.add(stretchVortex);
+
+    menuY += 30;
+
+    hitsoundPlayerStepper = new PsychUINumericStepper(10, 145, 0.2, 0, 0, 1, 1);
+    hitsoundOpponentStepper = new PsychUINumericStepper(10+100, 145, 0.2, 0, 0, 1, 1);
+    hitsoundMetronomeStepper = new PsychUINumericStepper(10+200, 145, 0.2, 0, 0, 1, 1);
+    hitsoundPlayerStepper.behindText.color = 0xF7E3FF;
+    hitsoundOpponentStepper.behindText.color = 0xF7E3FF;
+    hitsoundMetronomeStepper.behindText.color = 0xF7E3FF;
+    if (true){
+        tab_group.remove(hitsoundPlayerStepper);
+        tab_group.remove(hitsoundOpponentStepper);
+        tab_group.remove(metronomeStepper);
+        tab_group.add(hitsoundPlayerStepper);
+        tab_group.add(hitsoundOpponentStepper);
+        tab_group.add(hitsoundMetronomeStepper);
+        hitsoundPlayerStepper.value = 0.6;
+        hitsoundOpponentStepper.value = 0.6;
+    }
+
+    //state.mainBox.updateTabs();
+    //var wid:Int = state.mainBox.bg.width / state.mainBox.tabs.length;
+    var wid:Array = [];
+    var pres=0;
+    for (tab in mainBox.tabs)
+    {
+        tab.text.fieldWidth = tab.text.textField.textWidth;
+        tab.text.textField.wordWrap = false;
+
+        //tab.text.updateHitbox();
+        //tab.text.fieldWidth = tab.text.textField.textWidth+5;
+        wid.push(tab.text.fieldWidth);
+        pres += tab.text.fieldWidth;
+        //tab.resize(wid, 20);
+        //tab.cameras = cameras;
+    }
+    pres = mainBox.bg.width/pres;
+    //pres = 1;
+    var lX=0;
+    for (w in wid) lX += Std.int(w * pres);
+    lX = (mainBox.bg.width-lX)/2;
+    //var tY = lX;
+    for (num in 0...mainBox.tabs.length)
+    {
+        var tab = mainBox.tabs[num];
+        tab.x = mainBox.x + lX;
+        //tab.y = state.mainBox.y - tY;
+        lX += Std.int(wid[num]*pres);
+        tab.resize(wid[num]*pres, 20);
+        //tab.cameras = cameras;
+    }
+    createModules();
+    callHX("onCreateTrue");
+
+    var cursor = new FlxSprite();
+    cursor.loadGraphic(Paths.image("spr_rhythmgame_editor_mouse_0"));
+    //cursor.antialiasing = true;
+    FlxG.mouse.load(cursor.pixels,2);
+
+    for (i in icons){
+        //var scale = i.scale;
+        FlxTween.tween(i,{"x":i.x,"y":i.y,"scale.x":i.scale.x,"scale.y":i.scale.y,"alpha":i.alpha},1);
+        i.scale.set(i.scale.x*50,i.scale.y*50);
+        i.alpha = 1;
+        i.x += i.width*2.5;
+        i.y += i.height*2.5;
+    }
+
+    ChartLoaded = true;
+    FlxG.sound.play(Paths.sound('snd_ominous'), 0.6);
+    if (fakeLib)
+        addOutText("fake Lib's added",true,true);trace("work!!");
+}
+
+function onUpdatePost(_e) {
+//var state =  FlxG.state;
+try{
+   // if (!ChartLoaded){
+   //     //trace(objThis.interp.locals);
+   //     // addOutText(test.test(),true,true);
+   //     //addOutText(test.testVar,true,true);
+   // }
+    //funnyOnec = !funnyOnec;
+    //if (funnyOnec){
+    //    return;
+    //}
+    var sectionChange = false;
+    var sectionVec = 0;
+    var subEditor = Type.getClassName(Type.getClass(subState))=="states.editors.content.EditorPlayState";
+    if (subEditor?(subState.curSec!=section):(curSec!=section)){
+        if (section!=-1&&curSec==0)//временно
+        {
+            updateCharacters();
+            // var wid:Array = [];
+            // var pres=0;
+            // for (tab in state.mainBox.tabs)
+            // {
+            //     tab.text.fieldWidth = tab.text.textField.textWidth+10;
+            //     tab.text.textField.wordWrap = false;
+
+            //     //tab.text.updateHitbox();
+            //     //tab.text.fieldWidth = tab.text.textField.textWidth+5;
+            //     wid.push(tab.text.fieldWidth);
+            //     pres += tab.text.fieldWidth;
+            //     //tab.resize(wid, 20);
+            //     //tab.cameras = cameras;
+            // }
+            // pres = state.mainBox.bg.width/pres;
+            // //pres = 1;
+            // var lX=0;
+            // for (w in wid) lX += Std.int(w * pres);
+            // lX = (state.mainBox.bg.width-lX)/2;
+            // for (num in 0...state.mainBox.tabs.length)
+            // {
+            //     var tab = state.mainBox.tabs[num];
+            //     tab.x = state.mainBox.x + lX;
+            //     lX += Std.int(wid[num]*pres);
+            //     tab.resize(wid[num]*pres, 20);
+            //     //tab.cameras = cameras;
+            // }
+        }
+        sectionVec = subEditor?(subState.curSec):(curSec) - section;
+        section = subEditor?(subState.curSec):(curSec);
+        sectionChange = true;
+        if (hitsoundMetronomeStepper.value>0)
+            FlxG.sound.play(Paths.sound('chartingSounds/metronome1'), hitsoundMetronomeStepper.value);
+        //for (i in 0...ChartingState.GRID_PLAYERS){
+        //    state.icons[i].antialiasing=false;
+        //}
+        if (ChartingState.GRID_PLAYERS==1){
+            //var kek = ChartingState.GRID_SIZE;
+            //ChartingState.GRID_SIZE = 20;
+            updateWaveform("INST");
+            //ChartingState.GRID_SIZE = kek;
+        }
+        
+    }
+    if (subEditor?(subState.curBeat!=beat):(curBeat!=beat)){
+        beat = subEditor?(subState.curBeat):(curBeat);
+        notDance();
+        if (!sectionChange&&hitsoundMetronomeStepper.value>0)
+            FlxG.sound.play(Paths.sound('chartingSounds/metronome2'), hitsoundMetronomeStepper.value);
+
+    }
+    if ((FlxG.sound.music.playing||subEditor)&&(lastTime != Conductor.songPosition)){
+        if (subEditor){
+            //state.mainBox.visible=true;
+            //addOutText("hi",false,true);
+            try{
+                checkNotes(notes.concat(events));
+                for (m in previewCharaters){
+                    if(m!=null)
+                        m.update((Conductor.songPosition-lastTime)/1000);
                 }
-            }
-            if (FlxG.mouse.justPressed){
-                if (onTabs&&!p){
-                    FlxG.sound.play(Paths.sound('chartingSounds/ClickDown'), 0.6);
-                    p = true;
-                }
-                stretchNote = null;
-                
-            }
-            if (FlxG.mouse.pressed){
-                if (stretchNote!=null){
-                    var susBase = (Conductor.stepCrochet / 2);
-                    var sus = susBase*Std.int((FlxG.mouse.y-deltaMouseY-stretchNote.y)/(ChartingState.GRID_SIZE/2));
-                    //addOutText(FlxG.mouse.y-stretchNote.y);
-                    //addOutText(FlxG.mouse.y);
-                    if (sus != stretchNote.sustainLength&&sus>=0){
-                        stretchNote.setSustainLength(sus,state.cachedSectionCrochets[section] / 4, state.curZoom);
-                        FlxG.sound.play(Paths.sound('chartingSounds/stretch'+Std.string(FlxG.random.int(1,2))+'_UI'), 0.6);
-                    }
-                }
-                
-            }
-            if (stretchVortex.checked){
-                var PressedVortexKeys = [];
-            // trace("1");
-                for (k in ChartingState.keysArray)
-                    PressedVortexKeys.push(FlxG.keys.checkStatus(k, 1));//1 == PRESSED
-                if (PressedVortexKeys.contains(true)){
-                    var susBase = (Conductor.stepCrochet / 2);
-                    for (i in 0...PressedVortexKeys.length){
-                        if (!PressedVortexKeys[i]) stretchNotes[i] = null;
-                        if (stretchNotes[i]==null) continue;
-                        var sus = susBase*Std.int((Conductor.songPosition-stretchNotes[i].strumTime)/susBase);
-                        if (sus < susBase*2) continue;
-                        //trace(sus);
-                        stretchNotes[i].setSustainLength(sus,state.cachedSectionCrochets[section] / 4, state.curZoom);
-                    }
-                }else
-                    stretchNotes = [];
-            }
-            //trace("3");
-            if (FlxG.mouse.justReleased ){
-                if (onTabs&&p){
-                    FlxG.sound.play(Paths.sound('chartingSounds/ClickUp'), 0.6);
-                    p = false;
-                }
-                stretchNote = null;
-            }
-            checkUndo();
-            //notesPrew.Update();
-            if (sectionChange||curZ != curZoom){
-                //if (section%2==0){
-                PlWave.text.color = healthColorsArray[0];
-                PlWave.text.borderColor = isLight(healthColorsArray[0])?0xFF000000:0xFFFFFFFF;
-                OppWave.text.color = healthColorsArray[1];
-                OppWave.text.borderColor = isLight(healthColorsArray[1])?0xFF000000:0xFFFFFFFF;
-                upgradeCW(section,sectionVec);
-                //if (PlWave.checked)
-                //    updateWaveform("PLAYER"  ,healthColorsArray[0],state.gridBg.x - ChartingState.GRID_SIZE*(ChartingState.GRID_COLUMNS_PER_PLAYER-1));
-                //if (OppWave.checked)
-                //    updateWaveform("OPPONENT",healthColorsArray[1],state.gridBg.x + ChartingState.GRID_SIZE*(ChartingState.GRID_COLUMNS_PER_PLAYER+1));
-                //}
-                //state.updateWaveform();
-                //addOutText("Update");
-                }
-            //callHX("onUpdate");
-        }else{
-            if(ChartLoaded){
-                ChartLoaded = false;
-                onRealDestroy();
-               // FlxG.signals.postUpdate.remove(Helper);//how fix addOutText == null
+            }catch(e:Dynamic){addOutText(e,true);}
+        }
+        else
+            checkNotes(curRenderedNotes.members.concat(behindRenderedNotes.members));
+
+        
+    }
+    //lateDance();
+    lastTime = Conductor.songPosition;
+    //trace(Conductor.songPosition);
+    if (FlxG.sound.music.playing||subEditor)
+        stoplofy();
+    else
+        playlofy();
+    if (outputAlpha == 4){
+        addOutText(outputTxt.text,outputTxt.color==0xFFFF0000,true);
+        outputAlpha = 0;//lol
+        // trace("triger!!!");
+    }
+    var onTabs = ((subState!=null) || FlxG.mouse.overlaps(mainBox,camUI) || FlxG.mouse.overlaps(infoBox,camUI) || FlxG.mouse.overlaps(upperBox,camUI));
+    if (!onTabs){
+        for (i in TBoxs){
+            onTabs = onTabs || FlxG.mouse.overlaps(i,camUI);
+        }
+    }
+    if (FlxG.mouse.justPressed){
+        if (onTabs&&!p){
+            FlxG.sound.play(Paths.sound('chartingSounds/ClickDown'), 0.6);
+            p = true;
+        }
+        stretchNote = null;
+        
+    }
+    if (FlxG.mouse.pressed){
+        if (stretchNote!=null){
+            var susBase = (Conductor.stepCrochet / 2);
+            var sus = susBase*Std.int((FlxG.mouse.y-deltaMouseY-stretchNote.y)/(ChartingState.GRID_SIZE/2));
+            //addOutText(FlxG.mouse.y-stretchNote.y);
+            //addOutText(FlxG.mouse.y);
+            if (sus != stretchNote.sustainLength&&sus>=0){
+                stretchNote.setSustainLength(sus,cachedSectionCrochets[section] / 4, curZoom);
+                FlxG.sound.play(Paths.sound('chartingSounds/stretch'+Std.string(FlxG.random.int(1,2))+'_UI'), 0.6);
             }
         }
-        try{
-        if (getVar("chartHelper2")!=null){
-            FlxG.signals.postUpdate.remove(Helper);
-            addOutText("sorry.",true,true);
-            trace("panic unextended");  
-            onRealDestroy();
-            //this.destroy();
-        }}catch (e:Dynamic) {}
-    }catch (e:Dynamic) {
-        trace(e);
-        FlxG.signals.postUpdate.remove(Helper);
-        addOutText("i'm dead",true);
-        addOutText(e);
-        onRealDestroy(true);
-
-        Iris.instances.get(this.config.name).destroy();
-        Iris.instances.remove(this.config.name);
-        //this.destroy();
+        
     }
-}
-
-var ema:Float = 0;
-var dis:Bool = false;
-function onUpdatePost(e) {
-    Helper();
-    if (!firstUpdateChars)
-        updateCharacters();
-}
-function onUpdates(e) {
-    ema += e;
-    if (ema>(e*5)&&!dis){
-        if (getVar("chartHelper2")==null){//disable on other scripts
-            if (getVar("chartExtened")!=null){
-                trace("UnExtended Editor");
-                FlxG.signals.postUpdate.remove(getVar("chartExtened"));
-                setVar("chartExtened",null);
-                
+    if (stretchVortex.checked){
+        var PressedVortexKeys = [];
+    // trace("1");
+        for (k in ChartingState.keysArray)
+            PressedVortexKeys.push(FlxG.keys.checkStatus(k, 1));//1 == PRESSED
+        if (PressedVortexKeys.contains(true)){
+            var susBase = (Conductor.stepCrochet / 2);
+            for (i in 0...PressedVortexKeys.length){
+                if (!PressedVortexKeys[i]) stretchNotes[i] = null;
+                if (stretchNotes[i]==null) continue;
+                var sus = susBase*Std.int((Conductor.songPosition-stretchNotes[i].strumTime)/susBase);
+                if (sus < susBase*2) continue;
+                //trace(sus);
+                stretchNotes[i].setSustainLength(sus,cachedSectionCrochets[section] / 4, curZoom);
             }
-            if (getVar("chartExtened")==null){
-                trace("Extended Editor");
-                FlxG.signals.postUpdate.add(Helper);
-            }
+        }else
+            stretchNotes = [];
+    }
+    //trace("3");
+    if (FlxG.mouse.justReleased ){
+        if (onTabs&&p){
+            FlxG.sound.play(Paths.sound('chartingSounds/ClickUp'), 0.6);
+            p = false;
         }
-        dis = true;
-        //trace(game.songName);
-        //ema += e;
+        stretchNote = null;
     }
+    checkUndo();
+    //notesPrew.Update();
+    if (sectionChange||curZ != curZoom){
+        //if (section%2==0){
+        PlWave.text.color = healthColorsArray[0];
+        PlWave.text.borderColor = isLight(healthColorsArray[0])?0xFF000000:0xFFFFFFFF;
+        OppWave.text.color = healthColorsArray[1];
+        OppWave.text.borderColor = isLight(healthColorsArray[1])?0xFF000000:0xFFFFFFFF;
+        upgradeCW(section,sectionVec);
+        //if (PlWave.checked)
+        //    updateWaveform("PLAYER"  ,healthColorsArray[0],state.gridBg.x - ChartingState.GRID_SIZE*(ChartingState.GRID_COLUMNS_PER_PLAYER-1));
+        //if (OppWave.checked)
+        //    updateWaveform("OPPONENT",healthColorsArray[1],state.gridBg.x + ChartingState.GRID_SIZE*(ChartingState.GRID_COLUMNS_PER_PLAYER+1));
+        //}
+        //state.updateWaveform();
+        //addOutText("Update");
+        }
+    //callHX("onUpdate");
+}catch (e:Dynamic) {
+    trace(e);
+    FlxG.signals.postUpdate.remove(Helper);
+    addOutText("i'm dead",true);
+    addOutText(e);
+    onRealDestroy(true);
+
+    Iris.instances.get(this.config.name).destroy();
+    Iris.instances.remove(this.config.name);
+    //this.destroy();
 }
+}
+
+//Helper = ()->{
+//    try{
+//        //e += _;
+//        //trace("hi");
+//        setVar("chartExtened",Helper);
+//
+//        if (Type.getClassName(Type.getClass(FlxG.state))=="states.editors.ChartingState"){
+//            
+//        }else{
+//            if(ChartLoaded){
+//                ChartLoaded = false;
+//                onRealDestroy();
+//               // FlxG.signals.postUpdate.remove(Helper);//how fix addOutText == null
+//            }
+//        }
+//        try{
+//        if (getVar("chartHelper2")!=null){
+//            FlxG.signals.postUpdate.remove(Helper);
+//            addOutText("sorry.",true,true);
+//            trace("panic unextended");  
+//            onRealDestroy();
+//            //this.destroy();
+//        }}catch (e:Dynamic) {}
+//    
+//}
+
+//var ema:Float = 0;
+//var dis:Bool = false;
+//function onUpdatePost(e) {
+//    Helper();
+//    if (!firstUpdateChars)
+//        updateCharacters();
+//}
+//function onUpdates(e) {
+//    ema += e;
+//    if (ema>(e*5)&&!dis){
+//        if (getVar("chartHelper2")==null){//disable on other scripts
+//            if (getVar("chartExtened")!=null){
+//                trace("UnExtended Editor");
+//                FlxG.signals.postUpdate.remove(getVar("chartExtened"));
+//                setVar("chartExtened",null);
+//                
+//            }
+//            if (getVar("chartExtened")==null){
+//                trace("Extended Editor");
+//                FlxG.signals.postUpdate.add(Helper);
+//            }
+//        }
+//        dis = true;
+//        //trace(game.songName);
+//        //ema += e;
+//    }
+//}
 
 var wavData = [[[0], [0]], [[0], [0]]];
 

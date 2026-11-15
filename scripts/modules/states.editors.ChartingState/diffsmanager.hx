@@ -49,7 +49,7 @@ var diffCHbtn;
 //var unSafeCharts = [""=>null];
 if (this.get("unSafeCharts")==null) var unSafeCharts = [""=>null];
 var GEvents = ["this"=>null];
-function onCreateTrue() {
+function onCreatePost() {
 setVar("unSafeCharts",unSafeCharts);
 setGlobalVar("unSafeCharts",unSafeCharts);
 setVar("GEvents",GEvents);

@@ -43,7 +43,7 @@ function onSubstateDestroy() {
 }
 function ChangeDD() {
     var assDiff = dfClone[curSelected];
-    if (unSafeCharts.exists(assDiff)){
+    if (unSafeCharts.exists(assDiff)&&assDiff!=curDif){
         PlayState.chartingMode = true;
         PlayState.SONG = unSafeCharts.get(assDiff).chart;
         Song.chartPath = unSafeCharts.get(assDiff).chartPath;
