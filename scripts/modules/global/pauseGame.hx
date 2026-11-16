@@ -2,16 +2,19 @@
 //return;// global custom sub state not work corect!
 import backend.Controls;
 import backend.MusicBeatState;
-import psychlua.CustomSubstate;
+//import psychlua.CustomSubstate;
 import flixel.util.FlxSpriteUtil;
 import flixel.util.FlxTimer;
+import flixel.text.FlxTextBorderStyle;
 import flixel.sound.FlxSound;
 import flixel.addons.display.FlxBackdrop;
 import flixel.addons.transition.FlxTransitionableState;
 import mikolka.compatibility.VsliceOptions;
 import mikolka.vslice.StickerSubState;
 import mikolka.vslice.freeplay.FreeplayState;
-import states.editors.ResultPreviewMenu;
+import states.editors.MasterEditorMenu;
+import states.ModsMenuState;
+//import states.editors.ResultPreviewMenu;
 
 import mobile.objects.TouchZone;
 if (Controls.instance.mobileC)
@@ -30,6 +33,7 @@ function setVF(Var,Fun) {
 }
 
 var pauseBG:FlxCamera = new FlxCamera(-700, -100, 700, 1500, 1);
+var BGS:FlxCamera = new FlxCamera();
 var stunAction = false;
 var isPause:Bool = false;
 var Control = Controls.instance;
@@ -37,55 +41,50 @@ var Control = Controls.instance;
 var backed:FlxBackdrop;
 var backTimer:FlxText;
 var timer:Float;
+var border = Type.createEnum(FlxTextBorderStyle,"OUTLINE"); 
 var freeAction:Array = [];
 var inst:FlxSound;
 var back:TouchZone;
 
 function onCreatePost() {
 
-//setVF("endScreen","//playSnd");
 	pauseBG.angle = -10;
-	// pauseBG.visible =false;
-	// pauseBG.x = -400;
 }
 
 function onUpdate(e) {
-	//game.canPause = false;
-	if (SuperControls.pressed("ALT")&&SuperControls.pressed("CONTROL")&&SuperControls.pressed("M"))
+	if (SuperControls.pressed("ALT")&&SuperControls.pressed("CONTROL")&&SuperControls.justPressed("M"))
 		StateHelper.openCustomSubstate('GlobalPause', true);
-	//if (Control.CHAR_SELECT && PlayState.SONG.song == "songChart"){
-	//	//playSnd("splat");
-	//	MusicBeatState.resetState();}
-	//if (Control.FAVORITE && PlayState.SONG.song != "songChart"){
-	//	//playSnd("crowd_cheer_single");
-	//	CustomSubstate.openCustomSubstate('END', true);}
 }
+
 var curAction:Int = 0;
 var pausedSongs = [];
 function onCustomSubstateCreate(customSubstate,name) {
 	isPause = name == "GlobalPause";
 	if (!isPause)
 		return;
+	FlxG.cameras.add(BGS, false);
 	FlxG.cameras.add(pauseBG, false);
+	BGS.bgColor = 0x00FFFFFF;
+	pauseBG.bgColor = 0x00FFFFFF;
 	timer = 0.2;
 	stunAction = false;
 	pausedSongs = [];
 	for (s in FlxG.sound.list.members.concat([FlxG.sound.music])){
-        //if (!s.playing)continue;
+        if (!s.playing)continue;
         s.pause();
 		pausedSongs.push(s);
     }
 
 	backTimer = new FlxText(0, 0, 350, "3", 250, true);
 	backTimer.font = Paths.font("fnt_main.ttf");
-	//backTimer.cameras = [customSubstate.camera];
-	backTimer.cameras = [FlxG.cameras.list[FlxG.cameras.list.length-1]];
-	backTimer.camera = FlxG.cameras.list[FlxG.cameras.list.length-1];
+	backTimer.cameras = [BGS];
 	// susiCombo.scale.y = 4;
 	backTimer.screenCenter(0x11); // XY
 	backTimer.antialiasing = false;
 	backTimer.alignment = "center";
 	backTimer.visible = false;
+	backTimer.borderStyle = border;
+	backTimer.borderSize = 2;      
 	customSubstate.add(backTimer);
 
 	// pauseBG.visible =true;
@@ -103,7 +102,7 @@ function onCustomSubstateCreate(customSubstate,name) {
 	backed.animation.play('pog', true);
 	backed.camera = pauseBG;
 	customSubstate.add(backed);
-	var listAct = ["continue", "reset"];
+	var listAct = ["continue","Mods", "Debug"];
 	//if (Control.mobileC) listAct.insert(1,"toCE");
 	//if (PlayState.SONG.format != "psych_v1_convert"&&CurChar!="Kris") listAct.insert(1,"toMenu");
 	for (act in listAct) {
@@ -124,11 +123,14 @@ function onCustomSubstateCreate(customSubstate,name) {
 		if (inst == null) {
 			inst = new FlxSound();
 			inst.loadEmbedded(Paths.returnSound("greenroom_detune", "mus"), true);
+			
+		}
+		if (inst.lenght>1000){
 			inst.volume = 0;
 			inst.play();
 			FlxG.sound.list.add(inst);
+			inst.fadeIn(2);
 		}
-		inst.fadeIn(2);
 	} catch (e:Dynamic) {}
 	if (Control.mobileC){
 		back = new TouchZone( 525, -110,  FlxG.width, FlxG.height*1.5,0xFFFF0000);
@@ -182,39 +184,48 @@ function pressAccept() {
 	switch (freeAction[Std.int(curAction)].text) {
 		case "continue":
 			continuem();
-		case "restart":
-			FlxTransitionableState.skipNextTransIn = false;
-			FlxTransitionableState.skipNextTransOut = false;
-			MusicBeatState.startTransition();
-		case "reset":
+		//case "restart":
+		//	FlxTransitionableState.skipNextTransIn = false;
+		//	FlxTransitionableState.skipNextTransOut = false;
+		//	MusicBeatState.startTransition();
+		case "reset *":
 			//FlxTransitionableState.skipNextTransIn = false;
 			//FlxTransitionableState.skipNextTransOut = false;
 			//MusicBeatState.startTransition();
-				StateHelper.closeCustomSubstate('GlobalPause');
-			FlxG.resetGame();
-        	//MusicBeatState.switchState(new ResultPreviewMenu());
+			StateHelper.closeCustomSubstate('GlobalPause');
+			//FlxG.resetGame();
+			var T = Type.resolveClass("TitleState");
+			trace(T);
+        	MusicBeatState.switchState(new T());
+		case "Debug" :
+        	MusicBeatState.switchState(new MasterEditorMenu());
+			continuem();
+		case "Mods" :
+        	MusicBeatState.switchState(new ModsMenuState());
+			continuem();
+			
 		// PlayState.nextReloadAll = true;
-		case "toMenu":
-			PlayState.SONG.song = "songChart";
-			// FlxG.sound.music.destroy();
-			MusicBeatState.startTransition();
+		//case "toMenu":
+		//	PlayState.SONG.song = "songChart";
+		//	// FlxG.sound.music.destroy();
+		//	MusicBeatState.startTransition();
 		// PlayState.nextReloadAll = true;
-		case "toCE":
-			game.openChartEditor();
-		case "exit":
-			CustomSubstate.closeCustomSubstate();
-			PlayState.deathCounter = 0;
-			PlayState.seenCutscene = false;
+		//case "toCE":
+		//	game.openChartEditor();
+		//case "exit":
+		//	CustomSubstate.closeCustomSubstate();
+		//	PlayState.deathCounter = 0;
+		//	PlayState.seenCutscene = false;
 
-			PlayState.instance.canResync = false;
-			PlayState.changedDifficulty = false;
-			PlayState.chartingMode = false;
-			FlxG.camera.followLerp = 0;
-			if (FlxG.sound.music != null) {
-				FlxG.sound.music.pause();
-				PlayState.instance.vocals.pause();
-			}
-			openSubState(new StickerSubState(null, (sticker) -> FreeplayState.build(null, sticker)));
+		//	PlayState.instance.canResync = false;
+		//	PlayState.changedDifficulty = false;
+		//	PlayState.chartingMode = false;
+		//	FlxG.camera.followLerp = 0;
+		//	if (FlxG.sound.music != null) {
+		//		FlxG.sound.music.pause();
+		//		PlayState.instance.vocals.pause();
+		//	}
+		//	openSubState(new StickerSubState(null, (sticker) -> FreeplayState.build(null, sticker)));
 	}
 	inst.fadeOut(1);
 }
@@ -309,7 +320,7 @@ function onCustomSubstateUpdate(customSubstate,name, e) {
     if (Control.CHAR_SELECT ){
 		//MusicBeatState.resetState();
 		inst.pause();
-				StateHelper.closeCustomSubstate('GlobalPause');
+		StateHelper.closeCustomSubstate('GlobalPause');
 		//playSnd("splat");
     }
 	// debugPrint("                                                           "+curAction);
@@ -331,4 +342,8 @@ function onCustomSubstateDestroy(customSubstate,name) {
 	curAction = 0;
 }
 
-function onDestroy() {}
+function onDestroy() {
+	pauseBG?.destroy();
+	BGS?.destroy();
+
+}

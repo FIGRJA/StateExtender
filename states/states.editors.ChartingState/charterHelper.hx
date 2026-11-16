@@ -564,7 +564,7 @@ var p = false;
 //var funnyOnec = true;
 
 function onCreatePost() {
-
+    trace(PlayState.chartingMode);
     menuY = 0;
     scanlofy();
     lofyM = new FlxSound();
@@ -1064,6 +1064,7 @@ function updateCustomWaveform(sameWave,_curSec,?_lenSec,?sound,?color) {
 
 function onDestroy() {
     onRealDestroy();
+    //PlayState.chartingMode = true;
 }
 function onRealDestroy(?panic=false) {
     for (m in wavesTyped){
