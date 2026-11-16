@@ -52,10 +52,21 @@ var back:TouchZone;
 function onCreatePost() {
 
 }
+var mPos = {x:0,y:0};
 
 function onUpdate(e) {
 	if (SuperControls.pressed("ALT")&&SuperControls.pressed("CONTROL")&&SuperControls.justPressed("M"))
 		StateHelper.openCustomSubstate('GlobalPause', true);
+	if (Control.mobileC){
+		if (FlxG.mouse.justPressed){
+			mPos.x = FlxG.mouse.x;
+			mPos.y = FlxG.mouse.y;
+		}
+		else if (FlxG.mouse.justReleased){
+			if (( FlxG.mouse.x - mPos.x) > (FlxG.width - 100) && (FlxG.mouse.y - mPos.y) > (FlxG.height - 100))
+				StateHelper.openCustomSubstate('GlobalPause', true);
+		}
+	}
 }
 
 var curAction:Int = 0;
