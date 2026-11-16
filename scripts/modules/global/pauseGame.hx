@@ -32,8 +32,11 @@ function setVF(Var,Fun) {
 	
 }
 
-var pauseBG:FlxCamera = new FlxCamera(-700, -100, 700, 1500, 1);
-var BGS:FlxCamera = new FlxCamera();
+var PGlistAction = ["continue","Mods", "Debug"];
+setGlobalVar("PGlistAction",PGlistAction);
+
+var pauseBG:FlxCamera;
+var BGS:FlxCamera;
 var stunAction = false;
 var isPause:Bool = false;
 var Control = Controls.instance;
@@ -48,7 +51,6 @@ var back:TouchZone;
 
 function onCreatePost() {
 
-	pauseBG.angle = -10;
 }
 
 function onUpdate(e) {
@@ -62,7 +64,10 @@ function onCustomSubstateCreate(customSubstate,name) {
 	isPause = name == "GlobalPause";
 	if (!isPause)
 		return;
-	FlxG.cameras.add(BGS, false);
+	 pauseBG = new FlxCamera(-700, -100, 700, 1500, 1);
+	pauseBG.angle = -10;
+	 BGS = new FlxCamera();                            
+	 FlxG.cameras.add(BGS, false);
 	FlxG.cameras.add(pauseBG, false);
 	BGS.bgColor = 0x00FFFFFF;
 	pauseBG.bgColor = 0x00FFFFFF;
@@ -102,10 +107,9 @@ function onCustomSubstateCreate(customSubstate,name) {
 	backed.animation.play('pog', true);
 	backed.camera = pauseBG;
 	customSubstate.add(backed);
-	var listAct = ["continue","Mods", "Debug"];
 	//if (Control.mobileC) listAct.insert(1,"toCE");
 	//if (PlayState.SONG.format != "psych_v1_convert"&&CurChar!="Kris") listAct.insert(1,"toMenu");
-	for (act in listAct) {
+	for (act in PGlistAction) {
 		var action = new FlxText(0, 0, 500, act, 130, true);
 		action.font = Paths.font("fnt_main.ttf");
 		action.cameras = [pauseBG];
@@ -164,7 +168,8 @@ function onCustomSubstateCreate(customSubstate,name) {
 		//});
 		scroll.onTap.add(() ->
 		{
-			pressAccept();
+			//PGpressAccept();
+			StateHelper.callHX("PGpressAccept",[freeAction[Std.int(curAction)].text]);
 		});
 		customSubstate.add(scroll);
 		customSubstate.add(button);
@@ -179,53 +184,24 @@ function onCustomSubstateCreatePost(customSubstate,name) {
 	updateText();
 }
 
-function pressAccept() {
+function PGpressAccept(cur) {
 	//playSnd("coin");
-	switch (freeAction[Std.int(curAction)].text) {
+	switch (cur) {
 		case "continue":
 			continuem();
-		//case "restart":
-		//	FlxTransitionableState.skipNextTransIn = false;
-		//	FlxTransitionableState.skipNextTransOut = false;
-		//	MusicBeatState.startTransition();
 		case "reset *":
-			//FlxTransitionableState.skipNextTransIn = false;
-			//FlxTransitionableState.skipNextTransOut = false;
-			//MusicBeatState.startTransition();
 			StateHelper.closeCustomSubstate('GlobalPause');
-			//FlxG.resetGame();
 			var T = Type.resolveClass("TitleState");
 			trace(T);
         	MusicBeatState.switchState(new T());
 		case "Debug" :
         	MusicBeatState.switchState(new MasterEditorMenu());
 			continuem();
+			FlxG.cameras.add(BGS, false);
 		case "Mods" :
         	MusicBeatState.switchState(new ModsMenuState());
 			continuem();
-			
-		// PlayState.nextReloadAll = true;
-		//case "toMenu":
-		//	PlayState.SONG.song = "songChart";
-		//	// FlxG.sound.music.destroy();
-		//	MusicBeatState.startTransition();
-		// PlayState.nextReloadAll = true;
-		//case "toCE":
-		//	game.openChartEditor();
-		//case "exit":
-		//	CustomSubstate.closeCustomSubstate();
-		//	PlayState.deathCounter = 0;
-		//	PlayState.seenCutscene = false;
-
-		//	PlayState.instance.canResync = false;
-		//	PlayState.changedDifficulty = false;
-		//	PlayState.chartingMode = false;
-		//	FlxG.camera.followLerp = 0;
-		//	if (FlxG.sound.music != null) {
-		//		FlxG.sound.music.pause();
-		//		PlayState.instance.vocals.pause();
-		//	}
-		//	openSubState(new StickerSubState(null, (sticker) -> FreeplayState.build(null, sticker)));
+			FlxG.cameras.add(BGS, false);
 	}
 	inst.fadeOut(1);
 }
@@ -244,45 +220,27 @@ function updateText(?Simply=false) {
 }
 function continuem() {
 	
-		//playSnd("splat");
 		timer = 4;
-		//FlxTween.tween(pauseBG, {x: -700, alpha: 0}, 60 / Conductor.bpm, {ease: FlxEase.circOut});
 		FlxTween.tween(pauseBG, {x: -700, alpha: 0}, 0.5, {ease: FlxEase.circOut});
-		//FlxTween.num(Conductor.songPosition,Conductor.songPosition+((-1*1000*60)/PlayState.SONG.bpm), 1.48, {ease: FlxEase.circOut,onUpdate: ()->{
-		//	getVar("D3Main").call("onUpdate",[0]);
-		//	FlxG.sound.music.time = Conductor.songPosition;
-		//	game.vocals.time = Conductor.songPosition;
-		//	game.opponentVocals.time = Conductor.songPosition;
-		//	var fakeCrochet:Float = (60 / PlayState.SONG.bpm) * 1000;
-		//	game.notes.forEachAlive(function(daNote:Note)
-		//	{
-		//		var strumGroup:FlxTypedGroup<StrumNote> = game.playerStrums;
-		//		if (!daNote.mustPress)
-		//			strumGroup = game.opponentStrums;
-//
-		//		var strum:StrumNote = strumGroup.members[daNote.noteData];
-		//		daNote.followStrumNote(strum, fakeCrochet, game.songSpeed / game.playbackRate);
-		//	});
-		//}} ,num -> Conductor.songPosition = num );
 		backTimer.visible = true;
-		FlxTimer.loop(0.5, (tim) -> {
-			//trace("hi");
-			backTimer.text = 3 - tim;
-			if (tim == 3){
+		if (FlxTimer.loop==null)
 				StateHelper.closeCustomSubstate('GlobalPause');
-				for (s in pausedSongs){
-					s.play();
+		else
+			FlxTimer.loop(0.5, (tim) -> {
+				backTimer.text = 3 - tim;
+				if (tim == 3){
+					StateHelper.closeCustomSubstate('GlobalPause');
+					FlxG.cameras.remove(BGS);
+					FlxG.cameras.remove(pauseBG);
+					for (s in pausedSongs){
+						s.play();
+					}
 				}
-			}
-
-				//CustomSubstate.closeCustomSubstate();
-				//game.setSongTime(Conductor.songPosition);
-		}, 4);
+			}, 4);
 
 		inst.fadeOut(1.5, 0, () -> {
 			inst.pause();
 		});
-		//trace("hi");
 }
 function onCustomSubstateUpdate(customSubstate,name, e) {
 	if (!isPause)
@@ -296,7 +254,8 @@ function onCustomSubstateUpdate(customSubstate,name, e) {
 
 	}
 	if (Control.ACCEPT) {
-		pressAccept();
+		StateHelper.callHX("PGpressAccept",[freeAction[Std.int(curAction)].text]);
+		//PGpressAccept();
 		updateText();
 	}
 	if (Control.UI_UP) {
@@ -318,13 +277,11 @@ function onCustomSubstateUpdate(customSubstate,name, e) {
 		//playSnd("bump");
 	}
     if (Control.CHAR_SELECT ){
-		//MusicBeatState.resetState();
 		inst.pause();
 		StateHelper.closeCustomSubstate('GlobalPause');
+		MusicBeatState.resetState();
 		//playSnd("splat");
     }
-	// debugPrint("                                                           "+curAction);
-	//if (timer > 0)
 		
 }
 
@@ -343,7 +300,7 @@ function onCustomSubstateDestroy(customSubstate,name) {
 }
 
 function onDestroy() {
-	pauseBG?.destroy();
-	BGS?.destroy();
+	//pauseBG?.destroy();
+	//BGS?.destroy();
 
 }
