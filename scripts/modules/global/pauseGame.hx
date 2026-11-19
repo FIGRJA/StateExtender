@@ -310,6 +310,8 @@ function onCustomSubstateDestroy(customSubstate,name) {
 	freeAction = [];
 	pauseBG.x = -700;
 	curAction = 0;
+					FlxG.cameras.remove(BGS);
+					FlxG.cameras.remove(pauseBG);
 }
 
 function onDestroy() {

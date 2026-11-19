@@ -210,9 +210,10 @@ function onCreatePost() {
 function reloadNP() {
     realClear();
     setStepCrochet(FlxG.sound.music.length/720);
-    //updateG(FlxG.sound.music.length);
+    updateG(FlxG.sound.music.length);
     addAllNotes(notes);
     addAllNotes(events);
     
 }
 setVar("reloadNotesPreview",reloadNP);
+setGlobalVar("reloadNotesPreview",reloadNP);
