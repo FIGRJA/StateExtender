@@ -264,9 +264,7 @@ function addOutText(text,?err=false,?used=false) {
     }
 }
 
-function onCreatePost() {
 
-}
 function createModules() {
     
     for (m in StateHelper.getLV("HXmodules")){
@@ -313,21 +311,26 @@ function changeCharacter(who,to) {
     char.scale.set(scale,scale);
     char.updateHitbox();
     if (tab.selectedTab == null&&tab._lastTab==null){
-        char.x = -(char.width-100)/2;
-        char.y = -char.height;
+        char.x = (char.width-100)/2;
+        char.y = char.height;
+        //trace(mainBox.x);
+        //trace(tab.tabs[0].x);
     }else{
         char.x = tab.tabs[0].x-(char.width-100)/2;
         char.y = tab.tabs[0].y-char.height;
-    }
+        //trace("wrong");
     char.x -= char.offset.x;//*char.height/300; 
     char.y -= char.offset.y;//*char.width/300;
     //addOutText(tab);
     var daOff = [0,0];
     idle = getIdle(char.hasAnimation);
-    if (char.hasAnimation(idle))
+    if (char.hasAnimation(idle)){
         daOff = char.animOffsets.get(idle);
+    }
     //addOutText(char.offset);
+    //leDance(char,idle);
     char.offset.set(daOff[0],daOff[1]);
+    }
     //char.offset(0,0);
     //char.flipX = (char.flipX != char.editorIsPlayer);
     char.visible = to != "null";
@@ -369,7 +372,7 @@ function setPrewChars(?charakters) {
         tab_group.insert(0,TBox);
         tab_group.add(TBox.getTab(charakters[i]).text);
         
-        //changeCharacter(["BF","DAD","GF"][i],charakters[i]);
+        changeCharacter(["BF","DAD","GF"][i],charakters[i]);
         char.x = -75 -char.offset.x*char.height/300;
         char.y = -300-char.offset.y*char.height/300; 
     }
@@ -564,7 +567,7 @@ var p = false;
 //var funnyOnec = true;
 
 function onCreatePost() {
-    trace(PlayState.chartingMode);
+    //trace(PlayState.chartingMode);
     menuY = 0;
     scanlofy();
     lofyM = new FlxSound();
@@ -709,6 +712,7 @@ function onCreatePost() {
     FlxG.sound.play(Paths.sound('snd_ominous'), 0.6);
     if (fakeLib)
         addOutText("fake Lib's added",true,true);trace("work!!");
+    //onUpdatePost(0);
 }
 
 function onUpdatePost(_e) {
@@ -883,13 +887,13 @@ try{
     //callHX("onUpdate");
 }catch (e:Dynamic) {
     trace(e);
-    FlxG.signals.postUpdate.remove(Helper);
+    //FlxG.signals.postUpdate.remove(Helper);
     addOutText("i'm dead",true);
     addOutText(e);
     onRealDestroy(true);
 
-    Iris.instances.get(this.config.name).destroy();
-    Iris.instances.remove(this.config.name);
+    //Iris.instances.get(this.config.name).destroy();
+    //Iris.instances.remove(this.config.name);
     //this.destroy();
 }
 }

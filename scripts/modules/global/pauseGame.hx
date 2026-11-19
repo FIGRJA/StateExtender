@@ -86,9 +86,11 @@ function onCustomSubstateCreate(customSubstate,name) {
 	stunAction = false;
 	pausedSongs = [];
 	for (s in FlxG.sound.list.members.concat([FlxG.sound.music])){
-        if (!s.playing)continue;
-        s.pause();
-		pausedSongs.push(s);
+		try{
+			if (!s.playing)continue;
+			s.pause();
+			pausedSongs.push(s);
+		}catch(e:Dunamic){trace(e);}
     }
 
 	backTimer = new FlxText(0, 0, 350, "3", 250, true);
@@ -151,7 +153,7 @@ function onCustomSubstateCreate(customSubstate,name) {
 		back = new TouchZone( 525, -110,  FlxG.width, FlxG.height*1.5,0xFFFF0000);
 		//back.alpha = 0.3;
 		back.angle = -10;
-		back.camera = game.camOther;
+		back.camera = BGS;
 		customSubstate.add(back);
 
 		var button = new TouchZone( 40, (FlxG.height/2)+100,  (FlxG.width/2),  100);
@@ -159,7 +161,7 @@ function onCustomSubstateCreate(customSubstate,name) {
 		button.alpha = 0.03;
 		button.angle = 10;
 
-		var scroll = new ScrollableObject(0.02, 40, 100, (FlxG.width/2), FlxG.height, button);
+		var scroll = new ScrollableObject(0.015, 40, 100, (FlxG.width/2), FlxG.height, button);
 		//scroll.alpha = 0.3;
 		scroll.angle = 10;
 		scroll.cameras = [pauseBG];
@@ -288,9 +290,9 @@ function onCustomSubstateUpdate(customSubstate,name, e) {
 		//playSnd("bump");
 	}
     if (Control.CHAR_SELECT ){
-		inst.pause();
 		StateHelper.closeCustomSubstate('GlobalPause');
 		MusicBeatState.resetState();
+		inst?.pause();
 		//playSnd("splat");
     }
 		
