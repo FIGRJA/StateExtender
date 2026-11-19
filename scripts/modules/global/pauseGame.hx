@@ -234,11 +234,11 @@ function updateText(?Simply=false) {
 function continuem() {
 	
 		timer = 4;
-		FlxTween.tween(pauseBG, {x: -700, alpha: 0}, 0.5, {ease: FlxEase.circOut});
-		backTimer.visible = true;
 		if (FlxTimer.loop==null)
 				StateHelper.closeCustomSubstate('GlobalPause');
-		else
+		else{
+		FlxTween.tween(pauseBG, {x: -700, alpha: 0}, 0.5, {ease: FlxEase.circOut});
+		backTimer.visible = true;
 			FlxTimer.loop(0.5, (tim) -> {
 				backTimer.text = 3 - tim;
 				if (tim == 3){
@@ -250,6 +250,7 @@ function continuem() {
 					}
 				}
 			}, 4);
+		}
 
 		inst.fadeOut(1.5, 0, () -> {
 			inst.pause();
