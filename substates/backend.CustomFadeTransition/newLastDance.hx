@@ -2,12 +2,13 @@ package substates.backend.CustomFadeTransition;
 var Ftext;
 if (this.get("previousLoadingScreen")==null) var previousLoadingScreen;
 function onSubstateCreate(ss) {
-    if (previousLoadingScreen!=null&&Type.getClassName(Type.getClass(FlxG.state))!="states.LoadingState"){
+    if (previousLoadingScreen!=null&&isTransIn){
 
         previousLoadingScreen = new FlxSprite(0, 0, previousLoadingScreen);
         previousLoadingScreen.setGraphicSize(FlxG.width,FlxG.height);
         previousLoadingScreen.updateHitbox();
         ss.add(previousLoadingScreen);
+        super.duration *=1.5;
         FlxTween.tween(previousLoadingScreen,{alpha:0},duration);
         transGradient.visible = false;
         transBlack.visible = false;
@@ -21,7 +22,7 @@ function onSubstateCreate(ss) {
     
 }
 function onSubstateDestroy(ss) {
-    if (previousLoadingScreen!=null&&Type.getClassName(Type.getClass(FlxG.state))!="states.LoadingState"){
+    if (previousLoadingScreen!=null&&isTransIn){
         previousLoadingScreen.destroy();
         previousLoadingScreen = null;
         setGlobalVar('previousLoadingScreen',null);

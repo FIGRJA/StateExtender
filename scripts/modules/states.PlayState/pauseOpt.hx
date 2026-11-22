@@ -5,6 +5,7 @@ import options.GameplayChangersSubstate;
 import backend.ClientPrefs;
 import backend.MusicBeatState;
 import substates.PauseSubState;
+import openfl.display.BitmapData;
 import Reflect;
 
 function onCreate() {
@@ -54,5 +55,21 @@ function onSubstateDestroy(ss) {
         PauseSubState.restartSong(true);
         PlayState.prevCamFollow = camFollow;
         setGlobalVar("prewZoom",zoom);
+        takeScreenHUD();
+        FlxTransitionableState.skipNextTransIn = true;
+        FlxTransitionableState.skipNextTransOut = false;
     }
+}
+function takeScreenHUD() {
+    var bit = new BitmapData(FlxG.width, FlxG.height, true, 0x00FFFFFF);
+    for (i in 0...(FlxG.cameras.list.length-1)){
+        if (i<=FlxG.cameras.list.indexOf(game.camGame)) continue;
+        bit.draw(FlxG.cameras.list[i].canvas);
+    }
+    previousLoadingScreen = bit;
+    //previousLoadingScreen = new FlxSprite(0, 0, BitmapData.fromImage(FlxG.stage.window.readPixels()));
+    //previousLoadingScreen.setGraphicSize(FlxG.width,FlxG.height);
+    //previousLoadingScreen.updateHitbox();
+    setGlobalVar('previousLoadingScreen',previousLoadingScreen);
+    takes=true;
 }

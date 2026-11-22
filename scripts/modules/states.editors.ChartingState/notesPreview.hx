@@ -216,4 +216,4 @@ function reloadNP() {
     
 }
 setVar("reloadNotesPreview",reloadNP);
-setGlobalVar("reloadNotesPreview",reloadNP);
+//setGlobalVar("reloadNotesPreview",reloadNP);

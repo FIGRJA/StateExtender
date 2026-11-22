@@ -1,7 +1,10 @@
 package substates.substates.PauseSubState;
-
 import backend.Difficulty;
-var steps = 0;
+var steps = -20;
+function onSubstateCreate() {
+    steps = 0;
+}
+var takes = false;
 function onUpdatePost(e) {
     if (controls.ACCEPT){
         if (steps==0&&difficultyChoices==menuItems){
@@ -11,6 +14,7 @@ function onUpdatePost(e) {
             //FlxG.state.closeSubState();
         }
         steps +=1;
+        
         //close();
 
     }
