@@ -102,6 +102,7 @@ function bound(i,max) {
     //addOutText(i%max);
     return (max+i)%max;
 }
+var droplost;
 function manageSubState(state) {
     var btnY = 360;
     var selected = Difficulty.getString();//"--None--";
@@ -144,17 +145,17 @@ function manageSubState(state) {
             i.clickStyle = selected=="--None--"?disabledStyle:clickStyle;
         }
     }
-    var test = new PsychUIDropDownMenu(FlxG.width/2-50,btnY,["--None--"].concat(Difficulty.list),(a,b)->{
+    droplost = new PsychUIDropDownMenu(FlxG.width/2-50,btnY,["--None--"].concat(Difficulty.list),(a,b)->{
         //trace(a);
         //trace(b);
         selected = b;
         changeStyle();
         //btn1.normalStyle = dangerStyle;
     });
-    test.selectedLabel = selected;
-    test.screenCenter(0x01);
-    test.cameras = state.cameras;
-    state.add(test);
+    droplost.selectedLabel = selected;
+    droplost.screenCenter(0x01);
+    droplost.cameras = state.cameras;
+    state.add(droplost);
     changeStyle();
 }
 function createNewDiff() {
@@ -460,4 +461,15 @@ try{
 }catch(e:Dynamic){
     addOutText(e,true);
 }
+}
+function onSubstateDestroy(ss) {
+    if(Type.getClassName(Type.getClass(ss))=="states.editors.content.BasePrompt")
+        if (droplost != null) {
+        try {
+            if (PsychUIInputText.focusOn == droplost)
+                PsychUIInputText.focusOn = null;
+            droplost.showDropDown(false);
+        } catch (e:Dynamic) { trace(e); }
+    }
+    
 }

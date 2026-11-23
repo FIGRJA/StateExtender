@@ -53,7 +53,7 @@ function StartHXObj(module,?dir) {
         //    Iris.instances.remove(scriptToLoad);
         //}
         try {
-            DeltaRuneCode = new HScript(null, scriptToLoad,null,true);
+            var DeltaRuneCode = new HScript(null, scriptToLoad,null,true);
             DeltaRuneCode.interp.parentInstance = Type.createEmptyInstance(Type.resolveClass("flixel.FlxBasic"));
             DeltaRuneCode.interp.showPosOnLog = false;  
             DeltaRuneCode.set("super",DeltaRuneCode.interp.parentInstance);
@@ -123,7 +123,7 @@ function StartHXObj(module,?dir) {
 }
 function newObject(obj,?args) {
     if (Objs.exists(obj)){
-        _obj = StartHXObj(obj,Objs.get(obj));
+        var _obj = StartHXObj(obj,Objs.get(obj));
         _obj.this.call("new",args ?? []);
         return _obj;
     }

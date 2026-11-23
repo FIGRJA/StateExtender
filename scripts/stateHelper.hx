@@ -117,7 +117,7 @@ if (_NativeFileSystem==null){
             return [];
         },
         "isDirectory":(p)->{
-            return FileSystem.isDirectory((directory));
+            return FileSystem.isDirectory((p));
         },
         "getContent":(path)->{
             var isModded = path.indexOf("mods")==0;
@@ -248,21 +248,23 @@ function createModules(?dirs,?ss) {
     }
     
 }
-
+function hxcall(hx,fun,?arrs) {
+    if (hx.exists(fun))
+        try{
+            hx.call(fun,arrs);
+            
+        }catch (e:Dynamic){
+            trace(e);
+            //e = Std.string(e).split(":").join(":\n\t\t");
+        }
+    
+}
 function callHX(fun,?arrs){
     try{
         arrs ??= [];
         //var r;
-        for (hx in HXmodules)
-            if (hx.exists(fun))
-                try{
-                    hx.call(fun,arrs);
-                    
-                }catch (e:Dynamic){
-                    trace(e);
-                    //e = Std.string(e).split(":").join(":\n\t\t");
-                    //addOutText("err "+e,true,true);
-                } 
+        for (hx in HXmodules)//addOutText("err "+e,true,true);
+            hxcall(hx,fun,arrs);
     }catch (e:Dynamic){
         trace(e);
     }
@@ -275,6 +277,7 @@ function StartHXModule(module,?dir) {
     //dir ??= "scripts";
     //var scriptToLoad = Paths.modFolders(dir+module+".hx");
     var scriptToLoad = dir+module+".hx";
+    var DeltaRuneCode;
     //trace("try "+module);
     
 	if (NativeFileSystem.exists(scriptToLoad)) {
@@ -283,7 +286,7 @@ function StartHXModule(module,?dir) {
             Iris.instances.remove(scriptToLoad);
         }
         try {
-            var DeltaRuneCode = new HScript(null, scriptToLoad,null,true);
+            DeltaRuneCode = new HScript(null, scriptToLoad,null,true);
             DeltaRuneCode.interp.parentInstance = dir.indexOf("/substates/")==-1?FlxG.state:FlxG.state.subState;
             DeltaRuneCode.set("super",DeltaRuneCode.interp.parentInstance);
             DeltaRuneCode.interp.showPosOnLog = false;
@@ -326,9 +329,9 @@ function StartHXModule(module,?dir) {
         } catch (e:Dynamic) {
             trace(e);
             //addOutText(e,true);
-            var newScript:HScript = Iris.instances.get(dir+module+".hx");
-            if (newScript != null)
-                newScript?.destroy();
+            //var newScript:HScript = Iris.instances.get(dir+module+".hx");
+            if (DeltaRuneCode != null)
+                DeltaRuneCode?.destroy();
             return;
         }
 		
@@ -421,6 +424,7 @@ function signalOnCreate(_state) {
     trace("created "+(Type.getClassName(Type.getClass(FlxG.state))=="backend.MusicBeatState"?("("+customState+")"):Type.getClassName(Type.getClass(FlxG.state))));
     switchTimer = 5;
 }
+/*
 function signalOnSwitch() {
     callHX("onSwitch");
     signalOnDestroy();
@@ -439,6 +443,21 @@ function signalOnSwitch() {
         switchTimer = 5;
     }
     switchTimer -=1;
+}*/
+var inSwitch = false;
+function signalOnSwitch() {
+    if (inSwitch) {
+        trace("WARN: recursive preStateSwitch, ignored");
+        return;
+    }
+    inSwitch = true;
+    try {
+        callHX("onSwitch");
+        signalOnDestroy();
+        trace("switched");
+        inSwitch = false;
+    }catch(e:Dynamic){}
+    
 }
 function signalOnSwitchPost() {
     callHX("onCreatePost");
@@ -459,6 +478,7 @@ function signalOnSSDestroy(SS) {
             var m = HXmodules[i];
             try{
             if (m?.interp?.parentInstance==SS){
+                i -=1;
                 m?.destroy();
                 HXmodules.remove(m);
             }
@@ -486,8 +506,8 @@ function signalOnUpdatePost() {
     var paused = false;
     var SS = subStates.copy();
     SS.reverse();
-    for (s in subStates){
-        callHX("onCustomSubstateUpdatePost",[s.subState,s.name]);
+    for (s in SS){
+        callHX("onCustomSubstateUpdatePost",[s.subState,s.name,e]);
         paused = s.pause;
         if (paused) break;
     }
@@ -506,7 +526,7 @@ function signalOnFocusLost() {
     callHX("onFocusLost");
 }
 function signalOnGameResized(w,h) {
-    callHX("OnGameResized",[w,h]);
+    callHX("onGameResized",[w,h]);
 }
 function signalOnDestroy() {
     callHX("onDestroy");
