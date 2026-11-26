@@ -34,8 +34,10 @@ function onSubstateCreate() {
 //
 //    }
 //}
-
-function onSubstateDestroy() {
+function onDestroy() {
+    onSubstateDestroy(null);
+}
+function onSubstateDestroy(ss) {
     //trace(PlayState.changedDifficulty);
     if (PlayState.changedDifficulty){
         ChangeDD();

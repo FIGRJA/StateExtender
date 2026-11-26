@@ -2,7 +2,7 @@
 import backend.ui.PsychUIButton;
 import backend.ui.PsychUIInputText;
 import animate.FlxAnimate;
-import animate.FlxAnimateFrames;
+import animate.frames.FlxAnimateFrames;
 //import flxanimate.PsychFlxAnimate as FlxAnimate;
 import Reflect;
 //this.set("FlxAnimate",Type.typeof("flxanimate.PsychFlxAnimate"));
@@ -24,14 +24,15 @@ function onCreatePost() {
     //};
     var reloadImage:PsychUIButton = new PsychUIButton(imageInputText.x + 210, imageInputText.y - 3, "Reload Image", function()
     {
-        trace("hi");
+        trace("hi "+super.imageInputText.text);
         var lastAnim = state.character.getAnimationName();
         state.character.imageFile = imageInputText.text;
         try{
             state.reloadCharacterImage();
+            reloadCharacterImageMultiAAtlas();
         }catch(e:Dynamic){
             trace(e);
-            //reloadCharacterImageMultiAAtlas();
+            reloadCharacterImageMultiAAtlas();
         }
         if (!state.character.isAnimationNull())
         {
@@ -74,7 +75,7 @@ function reloadCharacterImageMultiAAtlas()
     //}
     //else
     //{
-    var a = multiAnimate(imageInputText.text.split(','));
+    var a = multiAnimate(super.imageInputText.text.split(','));
     trace(a);
       state.character.frames = a;
       trace("done");
@@ -106,23 +107,59 @@ function onUpdatePost(e) {
         lastTextImage = super.imageInputText.text;
     }
 }
-function multiAnimate(keys) {
+function formatIntToString(val:Int, count:Int) {
+	if (val < 0)
+		count -= 1;
+	var s:String = "";
+	// val = Math.abs(val);
+	for (i in 0...count) {
+		s = val % 10 + s;
+		val = Std.int(val / 10);
+	}
+    trace(s);
+	return s;
+}
+function addAtlas(atlas,frames) {
+    if (frames.parent == null)
+        throw "Cannot add atlas with null parent";
+
+    if (atlas.parents.indexOf(frames.parent) == -1)
+        atlas.parents.push(frames.parent);
+    for (frame in frames.frames)
+        atlas.pushFrame(frame);
+    return atlas;
     
+}
+function multiAnimate(keys) {
+    var lastF = 0;
     trace(keys[0]);
     var parentFrames = Paths.loadAnimateAtlas(keys[0]);
+    trace(parentFrames);
+
 		if (keys.length > 1)
 		{
 			var original = parentFrames;
-			parentFrames = new FlxAnimateFrames(parentFrames.parent);
-			parentFrames.addAtlas(original, true);
+			parentFrames = new FlxAnimateFrames();
+			addAtlas(parentFrames,original);
 			for (i in 1...keys.length)
 			{
-            trace("a"+i);
+            //lastF = parentFrames.frames.lenght;
+            lastF = 0089;
+            trace("a "+keys[i]);
 				var extraFrames = Paths.loadAnimateAtlas(keys[i]);
+                for (i in extraFrames.frames){
+                    trace(i);
+                    i.name = formatIntToString(Std.int(i.name)+Std.int(lastF),4);
+                    trace(i);
+                }
+                trace(extraFrames);
 				if (extraFrames != null)
-					parentFrames.addAtlas(extraFrames, true);
+			        addAtlas(parentFrames,extraFrames);
+					//parentFrames.addAtlas(extraFrames,true);
+                trace(parentFrames);
 			}
 		}
+            trace(parentFrames.parents);
 		return parentFrames;
     //for (i in arrs){
     //    FlxAnimateFrames.fromSpriteMap(cast myData, img);

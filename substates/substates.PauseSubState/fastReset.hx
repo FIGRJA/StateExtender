@@ -12,7 +12,7 @@ function onUpdatePost(e) {
             PlayState.prevCamFollow = game.camFollow;
             //setGlobalVar("prewZoom",FlxG.camera.zoom)
             takeScreenHUD();
-            super.camera.visible = false;
+            //super.camera.visible = false;
             FlxTransitionableState.skipNextTransIn = true;
             FlxTransitionableState.skipNextTransOut = false;
         }
